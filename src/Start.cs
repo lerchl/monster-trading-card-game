@@ -2,10 +2,19 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using Api;
+using Api.Endpoints;
 
 class Start {
 
     public static void Main(String[] args) {
+        ApiEndpointRegister er = new ApiEndpointRegister(typeof(Users));
+
+
+
+
+        // SERVER STUFF
+
         Socket server = new Socket(AddressFamily.InterNetwork,
                                    SocketType.Stream,
                                    ProtocolType.Tcp);
@@ -28,18 +37,35 @@ class Start {
         string httpMethod = match.Groups["httpMethod"].Value;
         string apiEndpoint = match.Groups["endpoint"].Value;
 
-        if (apiEndpoint.Equals("/users")) {
-            Console.WriteLine($"{httpMethod}-Request an /users");
-            client.Send(Encoding.ASCII.GetBytes("200 USER CREATED"));
-        } else if (apiEndpoint.Equals("/cards")) {
-            Console.WriteLine($"{httpMethod}-Request an /cards");
-            client.Send(Encoding.ASCII.GetBytes("200 CARD CREATED"));
-        } else {
-            Console.WriteLine("Anfrage an Endpoint der nicht existiert.");
-            client.Send(Encoding.ASCII.GetBytes("400 ENDPOINT DOES NOT EXIST"));
-        }
+        er.execute(new Destination(convert(httpMethod), apiEndpoint));
+
+        // if (apiEndpoint.Equals("/users")) {
+        //     Console.WriteLine($"{httpMethod}-Request an /users");
+        //     client.Send(Encoding.ASCII.GetBytes("200 USER CREATED"));
+        // } else if (apiEndpoint.Equals("/cards")) {
+        //     Console.WriteLine($"{httpMethod}-Request an /cards");
+        //     client.Send(Encoding.ASCII.GetBytes("200 CARD CREATED"));
+        // } else {
+        //     Console.WriteLine("Anfrage an Endpoint der nicht existiert.");
+        //     client.Send(Encoding.ASCII.GetBytes("400 ENDPOINT DOES NOT EXIST"));
+        // }
 
         client.Disconnect(false);
         Console.WriteLine("Connection closed...");
+    }
+
+    private static Api.HttpMethod convert(string httpMethod) {
+        switch (httpMethod) {
+            case "GET":
+                return Api.HttpMethod.GET;
+            case "POST":
+                return Api.HttpMethod.POST;
+            case "PUT":
+                return Api.HttpMethod.PUT;
+            case "DELETE":
+                return Api.HttpMethod.DELETE;
+            default:
+                throw new NotSupportedException();
+        }
     }
 }
