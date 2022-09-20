@@ -1,4 +1,5 @@
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace Api {
 
@@ -30,20 +31,20 @@ namespace Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public void execute(Destination destination, string data) {
+        public void execute(Destination destination, JObject data) {
             if (endpointTable.ContainsKey(destination)) {
                 MethodInfo methodInfo = endpointTable[destination];
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
                 object[] parameters = new object[parameterInfos.Length];
                 for (int i = 0; i < parameterInfos.Length; i++) {
                     ParameterInfo parameterInfo = parameterInfos[i];
-                    parameters[i] = data[parameterInfo.Name];
+                    // TODO: Check if the value is present first and answert with an error if not
+                    parameters[i] = data[parameterInfo.Name].Value<string>();
                 }
                 methodInfo.Invoke(null, parameters);
             } else {
                 Logger.Instance.Warn($"No endpoint found for {destination}");
             }
-            endpointTable[destination].Invoke(null, null);
         }
     }
 }

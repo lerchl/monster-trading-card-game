@@ -9,10 +9,8 @@ using Newtonsoft.Json.Linq;
 class Start {
 
     public static void Main(String[] args) {
-        ApiEndpointRegister er = new ApiEndpointRegister(typeof(Users));
-
-
-
+        ApiEndpointRegister er = new ApiEndpointRegister(typeof(Users),
+                                                         typeof(Authentication));
 
         // SERVER STUFF
 
@@ -36,7 +34,7 @@ class Start {
         Regex requestRegex = new Regex(requestPattern);
         Match requestMatch = requestRegex.Match(text);
 
-        string dataPattern = @"^.*\z";
+        string dataPattern = @"(\{.*\})";
         Regex dataRegex = new Regex(dataPattern);
         Match dataMatch = dataRegex.Match(text);
 
@@ -44,9 +42,10 @@ class Start {
         string apiEndpoint = requestMatch.Groups["endpoint"].Value;
         string data = dataMatch.Value;
 
+        Console.WriteLine("Read Data: " + data);
         JObject json = JObject.Parse(data);
 
-        er.execute(new Destination(convert(httpMethod), apiEndpoint));
+        er.execute(new Destination(convert(httpMethod), apiEndpoint), json);
 
         client.Disconnect(false);
         Console.WriteLine("Connection closed...");
