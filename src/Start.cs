@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using Api;
 using Api.Endpoints;
+using Newtonsoft.Json.Linq;
 
 class Start {
 
@@ -19,7 +20,7 @@ class Start {
                                    SocketType.Stream,
                                    ProtocolType.Tcp);
 
-        server.Bind(new IPEndPoint(IPAddress.Loopback, 3000));
+        server.Bind(new IPEndPoint(IPAddress.Loopback, 2000));
         server.Listen(5);
 
         Console.WriteLine("Accepting connection...");
@@ -31,24 +32,21 @@ class Start {
         Console.WriteLine(text);
 
 
-        string pattern = @"^(?'httpMethod'\w+) (?'endpoint'/\w*)";
-        Regex regex = new Regex(pattern);
-        Match match = regex.Match(text);
-        string httpMethod = match.Groups["httpMethod"].Value;
-        string apiEndpoint = match.Groups["endpoint"].Value;
+        string requestPattern = @"^(?'httpMethod'\w+) (?'endpoint'/\w*)";
+        Regex requestRegex = new Regex(requestPattern);
+        Match requestMatch = requestRegex.Match(text);
+
+        string dataPattern = @"^.*\z";
+        Regex dataRegex = new Regex(dataPattern);
+        Match dataMatch = dataRegex.Match(text);
+
+        string httpMethod = requestMatch.Groups["httpMethod"].Value;
+        string apiEndpoint = requestMatch.Groups["endpoint"].Value;
+        string data = dataMatch.Value;
+
+        JObject json = JObject.Parse(data);
 
         er.execute(new Destination(convert(httpMethod), apiEndpoint));
-
-        // if (apiEndpoint.Equals("/users")) {
-        //     Console.WriteLine($"{httpMethod}-Request an /users");
-        //     client.Send(Encoding.ASCII.GetBytes("200 USER CREATED"));
-        // } else if (apiEndpoint.Equals("/cards")) {
-        //     Console.WriteLine($"{httpMethod}-Request an /cards");
-        //     client.Send(Encoding.ASCII.GetBytes("200 CARD CREATED"));
-        // } else {
-        //     Console.WriteLine("Anfrage an Endpoint der nicht existiert.");
-        //     client.Send(Encoding.ASCII.GetBytes("400 ENDPOINT DOES NOT EXIST"));
-        // }
 
         client.Disconnect(false);
         Console.WriteLine("Connection closed...");

@@ -30,7 +30,19 @@ namespace Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public void execute(Destination destination) {
+        public void execute(Destination destination, string data) {
+            if (endpointTable.ContainsKey(destination)) {
+                MethodInfo methodInfo = endpointTable[destination];
+                ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                object[] parameters = new object[parameterInfos.Length];
+                for (int i = 0; i < parameterInfos.Length; i++) {
+                    ParameterInfo parameterInfo = parameterInfos[i];
+                    parameters[i] = data[parameterInfo.Name];
+                }
+                methodInfo.Invoke(null, parameters);
+            } else {
+                Logger.Instance.Warn($"No endpoint found for {destination}");
+            }
             endpointTable[destination].Invoke(null, null);
         }
     }
