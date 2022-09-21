@@ -1,31 +1,44 @@
-using System.Net.Http;
-using Api;
+using data.user;
 
 namespace Api.Endpoints {
 
     internal class Users {
 
+        private static readonly Logger<Users> _logger = new Logger<Users>();
+
+        private static readonly UserRepository userRepository = new UserRepository();
+
         private const string URL = "/users";
 
-        [ApiEndpoint(httpMethod = HttpMethod.GET, url = URL)]
+        // /////////////////////////////////////////////////////////////////////
+        // Methods
+        // /////////////////////////////////////////////////////////////////////
+
+        [ApiEndpoint(httpMethod = EHttpMethod.GET, url = URL)]
         public static void get() {
             // TODO
             Console.WriteLine("GET");
         }
 
-        [ApiEndpoint(httpMethod = HttpMethod.POST, url = URL)]
-        public static void post() {
-            // TODO
-            Console.WriteLine("POST");
+        [ApiEndpoint(httpMethod = EHttpMethod.POST, url = URL)]
+        public static void post(string Username, String Password) {
+            User? user = userRepository.findByUsername(Username);
+            if (user != null) {
+                _logger.Info($"User {Username} tried to register but already exists");
+            } else {
+                userRepository.save(new User(Username, Password));
+                _logger.Info($"User {Username} registered");
+                // TODO: Answer that registration has been sucessful
+            }
         }
 
-        [ApiEndpoint(httpMethod = HttpMethod.PUT, url = URL)]
+        [ApiEndpoint(httpMethod = EHttpMethod.PUT, url = URL)]
         public static void put() {
             // TODO
             Console.WriteLine("PUT");
         }
 
-        [ApiEndpoint(httpMethod = HttpMethod.DELETE, url = URL)]
+        [ApiEndpoint(httpMethod = EHttpMethod.DELETE, url = URL)]
         public static void delete() {
             // TODO
             Console.WriteLine("DELETE");

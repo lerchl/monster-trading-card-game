@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using Api;
 using Api.Endpoints;
 using Newtonsoft.Json.Linq;
+using server;
 
 class Start {
 
@@ -12,57 +13,44 @@ class Start {
         ApiEndpointRegister er = new ApiEndpointRegister(typeof(Users),
                                                          typeof(Authentication));
 
+        Server server = new Server(10001);
+
         // SERVER STUFF
 
-        Socket server = new Socket(AddressFamily.InterNetwork,
-                                   SocketType.Stream,
-                                   ProtocolType.Tcp);
+        // Socket server = new Socket(AddressFamily.InterNetwork,
+        //                            SocketType.Stream,
+        //                            ProtocolType.Tcp);
 
-        server.Bind(new IPEndPoint(IPAddress.Loopback, 2000));
-        server.Listen(5);
+        // server.Bind(new IPEndPoint(IPAddress.Loopback, 10001));
+        // server.Listen(5);
 
-        Console.WriteLine("Accepting connection...");
+        // Console.WriteLine("Accepting connection...");
 
-        Socket client = server.Accept();
-        byte[] buffer = new byte[9999];
-        int lenght = client.Receive(buffer);
-        string text = Encoding.ASCII.GetString(buffer, 0, lenght);
-        Console.WriteLine(text);
+        // Socket client = server.Accept();
+        // byte[] buffer = new byte[9999];
+        // int lenght = client.Receive(buffer);
+        // string text = Encoding.ASCII.GetString(buffer, 0, lenght);
+        // Console.WriteLine(text);
 
 
-        string requestPattern = @"^(?'httpMethod'\w+) (?'endpoint'/\w*)";
-        Regex requestRegex = new Regex(requestPattern);
-        Match requestMatch = requestRegex.Match(text);
+        // string requestPattern = @"^(?'httpMethod'\w+) (?'endpoint'/\w*)";
+        // Regex requestRegex = new Regex(requestPattern);
+        // Match requestMatch = requestRegex.Match(text);
 
-        string dataPattern = @"(\{.*\})";
-        Regex dataRegex = new Regex(dataPattern);
-        Match dataMatch = dataRegex.Match(text);
+        // string dataPattern = @"(\{.*\})";
+        // Regex dataRegex = new Regex(dataPattern);
+        // Match dataMatch = dataRegex.Match(text);
 
-        string httpMethod = requestMatch.Groups["httpMethod"].Value;
-        string apiEndpoint = requestMatch.Groups["endpoint"].Value;
-        string data = dataMatch.Value;
+        // string httpMethod = requestMatch.Groups["httpMethod"].Value;
+        // string apiEndpoint = requestMatch.Groups["endpoint"].Value;
+        // string data = dataMatch.Value;
 
-        Console.WriteLine("Read Data: " + data);
-        JObject json = JObject.Parse(data);
+        // Console.WriteLine("Read Data: " + data);
+        // JObject json = JObject.Parse(data);
 
-        er.execute(new Destination(convert(httpMethod), apiEndpoint), json);
+        // er.execute(new Destination(convert(httpMethod), apiEndpoint), json);
 
-        client.Disconnect(false);
-        Console.WriteLine("Connection closed...");
-    }
-
-    private static Api.HttpMethod convert(string httpMethod) {
-        switch (httpMethod) {
-            case "GET":
-                return Api.HttpMethod.GET;
-            case "POST":
-                return Api.HttpMethod.POST;
-            case "PUT":
-                return Api.HttpMethod.PUT;
-            case "DELETE":
-                return Api.HttpMethod.DELETE;
-            default:
-                throw new NotSupportedException();
-        }
+        // client.Disconnect(false);
+        // Console.WriteLine("Connection closed...");
     }
 }

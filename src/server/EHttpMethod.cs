@@ -1,6 +1,9 @@
+using System.Runtime.Serialization;
+
 namespace Api {
 
-    internal enum HttpMethod {
+    internal enum EHttpMethod {
+
         GET,
         POST,
         PUT,

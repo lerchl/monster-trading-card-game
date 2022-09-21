@@ -5,6 +5,8 @@ namespace Api {
 
     internal class ApiEndpointRegister {
 
+        private static readonly Logger<ApiEndpointRegister> _logger = new Logger<ApiEndpointRegister>();
+
         public readonly Dictionary<Destination, MethodInfo> endpointTable = new Dictionary<Destination, MethodInfo>();
 
         // /////////////////////////////////////////////////////////////////////
@@ -19,7 +21,7 @@ namespace Api {
                             .FirstOrDefault(cad => cad.AttributeType == typeof(ApiEndpoint));
                     if (attribute != null) {
                         Console.WriteLine("[INFO] Found endpoint {0}", methodInfo.Name);
-                        HttpMethod httpMethod = (HttpMethod) attribute.NamedArguments[0].TypedValue.Value;
+                        EHttpMethod httpMethod = (EHttpMethod) attribute.NamedArguments[0].TypedValue.Value;
                         string url = (string) attribute.NamedArguments[1].TypedValue.Value;
                         endpointTable.TryAdd(new Destination(httpMethod, url), methodInfo);
                     }
@@ -43,7 +45,7 @@ namespace Api {
                 }
                 methodInfo.Invoke(null, parameters);
             } else {
-                Logger.Instance.Warn($"No endpoint found for {destination}");
+                _logger.Warn($"No endpoint found for {destination}");
             }
         }
     }

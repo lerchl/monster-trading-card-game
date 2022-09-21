@@ -1,25 +1,18 @@
-class Logger {
-
-    public static Logger Instance {
-        get {
-            if (Instance == null) {
-                Instance = new Logger();
-            }
-            return Instance;
-        } private set {
-            Instance = value;
-        }
-    }
+class Logger<T> {
 
     // /////////////////////////////////////////////////////////////////////////
     // Methods
     // /////////////////////////////////////////////////////////////////////////
 
     public void Info(string message) {
-        Console.WriteLine($"[INFO] ({DateTime.Now.ToString("HH:mm:ss")}) {message}");
+        Log("INFO", message);
     }
 
-    internal void Warn(string v) {
-        throw new NotImplementedException();
+    public void Warn(string message) {
+        Log("WARN", message);
+    }
+
+    private void Log(string level, string message) {
+        Console.WriteLine($"[{level}] ({DateTime.Now.ToString("HH:mm:ss")}) {message} ::: {typeof(T).Name}");
     }
 }

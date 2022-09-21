@@ -2,14 +2,14 @@ namespace Api {
 
     internal class Destination {
 
-        public readonly HttpMethod method;
+        public readonly EHttpMethod method;
         public readonly string endpoint;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Destination(HttpMethod method, string endpoint) {
+        public Destination(EHttpMethod method, string endpoint) {
             this.method = method;
             this.endpoint = endpoint;
         }
