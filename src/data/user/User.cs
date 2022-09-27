@@ -1,4 +1,4 @@
-namespace data.user {
+namespace Data.User {
 
     internal class User {
 
