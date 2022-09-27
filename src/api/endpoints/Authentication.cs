@@ -4,16 +4,16 @@ namespace Api.Endpoints {
 
     internal class Authentication {
 
-        private static readonly Logger<Authentication> _logger = new Logger<Authentication>();
+        private static readonly Logger<Authentication> _logger = new();
 
-        private static readonly UserRepository userRepository = new UserRepository();
+        private static readonly UserRepository userRepository = new();
 
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
         [ApiEndpoint(httpMethod = EHttpMethod.POST, url = "/sessions")]
-        public static void login(string Username, string Password) {
+        public static void Login(string Username, string Password) {
             User? user = userRepository.findByUsername(Username);
             if (user == null) {
                 _logger.Info($"Unknown user {Username} tried to login");

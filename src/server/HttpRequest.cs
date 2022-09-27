@@ -1,23 +1,20 @@
 using Api;
+using Newtonsoft.Json.Linq;
 
 namespace server {
 
     internal class HttpRequest {
 
-        // turn into destination
-
-        public EHttpMethod HttpMethod { get; }
-        public string ApiEndpoint { get; }
-        public string Data { get; }
+        public readonly Destination destination;
+        public readonly JObject data;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public HttpRequest(EHttpMethod httpMethod, string apiEndpoint, string data) {
-            HttpMethod = httpMethod;
-            ApiEndpoint = apiEndpoint;
-            Data = data;
+        public HttpRequest(Destination destination, JObject data) {
+            this.destination = destination;
+            this.data = data;
         }
     }
 }

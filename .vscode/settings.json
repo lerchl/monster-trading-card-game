@@ -4,11 +4,11 @@
             "previewLimit": 50,
             "server": "localhost",
             "port": 5432,
+            "askForPassword": true,
             "driver": "PostgreSQL",
             "name": "DB",
             "database": "postgres",
-            "username": "postgres",
-            "password": "gFA4lKnavg4iRsjfCR0m"
+            "username": "postgres"
         }
     ]
 }

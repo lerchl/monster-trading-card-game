@@ -13,6 +13,6 @@ class Logger<T> {
     }
 
     private void Log(string level, string message) {
-        Console.WriteLine($"[{level}] ({DateTime.Now.ToString("HH:mm:ss")}) {message} ::: {typeof(T).Name}");
+        Console.WriteLine($"[{level}] ({DateTime.Now:HH:mm:ss}) {message} ::: {typeof(T).Name}");
     }
 }

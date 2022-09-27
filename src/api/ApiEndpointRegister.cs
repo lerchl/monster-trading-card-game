@@ -1,13 +1,14 @@
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using server;
 
 namespace Api {
 
     internal class ApiEndpointRegister {
 
-        private static readonly Logger<ApiEndpointRegister> _logger = new Logger<ApiEndpointRegister>();
+        private static readonly Logger<ApiEndpointRegister> _logger = new();
 
-        public readonly Dictionary<Destination, MethodInfo> endpointTable = new Dictionary<Destination, MethodInfo>();
+        public readonly Dictionary<Destination, MethodInfo> endpointTable = new();
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
@@ -33,7 +34,9 @@ namespace Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public void execute(Destination destination, JObject data) {
+        public void Execute(HttpRequest httpRequest) {
+            Destination destination = httpRequest.destination;
+
             if (endpointTable.ContainsKey(destination)) {
                 MethodInfo methodInfo = endpointTable[destination];
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
@@ -41,7 +44,7 @@ namespace Api {
                 for (int i = 0; i < parameterInfos.Length; i++) {
                     ParameterInfo parameterInfo = parameterInfos[i];
                     // TODO: Check if the value is present first and answert with an error if not
-                    parameters[i] = data[parameterInfo.Name].Value<string>();
+                    parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
                 }
                 methodInfo.Invoke(null, parameters);
             } else {

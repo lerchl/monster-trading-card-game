@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using Api;
+using Api.Endpoints;
+using Newtonsoft.Json.Linq;
 
 namespace server {
 
@@ -10,23 +12,25 @@ namespace server {
 
         private static readonly Logger<Server> _logger = new();
 
-        public Socket serverSocket;
+        private readonly ApiEndpointRegister _endpointRegister = new(typeof(Users), typeof(Authentication));
+
+        private readonly Socket _serverSocket;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
     
         public Server(int port) {
-            serverSocket = new Socket(AddressFamily.InterNetwork,
+            _serverSocket = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream,
                     ProtocolType.Tcp);
             
-            serverSocket.Bind(new IPEndPoint(IPAddress.Loopback, port));
-            serverSocket.Listen();
+            _serverSocket.Bind(new IPEndPoint(IPAddress.Loopback, port));
+            _serverSocket.Listen();
             _logger.Info("Listening on port " + port);
             
             for (;;) {
-                serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), serverSocket);
+                _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), _serverSocket);
             }
         }
 
@@ -35,7 +39,7 @@ namespace server {
         // /////////////////////////////////////////////////////////////////////
     
         private void AcceptCallback(IAsyncResult ar) {
-            Socket client = serverSocket.EndAccept(ar);
+            Socket client = _serverSocket.EndAccept(ar);
             EndPoint? endPoint = client.RemoteEndPoint;
             byte[] buffer = new byte[2048];
             int length = client.Receive(buffer);
@@ -43,9 +47,9 @@ namespace server {
 
             string text = Encoding.ASCII.GetString(buffer, 0, length);
             HttpRequest request = ParseRequest(text);
-            _logger.Info($"Received {request.HttpMethod} request for {request.ApiEndpoint} from {endPoint}");
-        
-            
+            _logger.Info($"Received {request.destination.method} request for {request.destination.endpoint} from {endPoint}");
+
+            _endpointRegister.Execute(request);
         }
 
         private static HttpRequest ParseRequest(string text) {
@@ -58,11 +62,11 @@ namespace server {
             Match dataMatch = dataRegex.Match(text);
 
             string httpMethod = requestMatch.Groups["httpMethod"].Value;
-            string apiEndpoint = requestMatch.Groups["endpoint"].Value;
-            string data = dataMatch.Value;
             _ = Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod);
+            string apiEndpoint = requestMatch.Groups["endpoint"].Value;
+            JObject data = JObject.Parse(dataMatch.Value);
 
-            return new HttpRequest(eHttpMethod, apiEndpoint, data);
+            return new HttpRequest(new(eHttpMethod, apiEndpoint), data);
         }
     }
 }

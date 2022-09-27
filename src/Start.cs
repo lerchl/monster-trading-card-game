@@ -10,10 +10,7 @@ using server;
 class Start {
 
     public static void Main(String[] args) {
-        ApiEndpointRegister er = new ApiEndpointRegister(typeof(Users),
-                                                         typeof(Authentication));
-
-        Server server = new Server(10001);
+        Server server = new(10001);
 
         // SERVER STUFF
 
