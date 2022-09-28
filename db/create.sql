@@ -1,5 +1,5 @@
 CREATE TABLE PLAYER (
-    ID       SERIAL PRIMARY KEY,
+    ID       UUID   PRIMARY KEY DEFAULT gen_random_uuid(),
     USERNAME TEXT   UNIQUE      NOT NULL,
     PASSWORD TEXT               NOT NULL
 );

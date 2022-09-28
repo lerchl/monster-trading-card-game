@@ -1,4 +1,4 @@
-using data.user;
+using Data.User;
 
 namespace Api.Endpoints {
 
@@ -14,7 +14,7 @@ namespace Api.Endpoints {
 
         [ApiEndpoint(httpMethod = EHttpMethod.POST, url = "/sessions")]
         public static void Login(string Username, string Password) {
-            User? user = userRepository.findByUsername(Username);
+            User? user = userRepository.FindByUsername(Username);
             if (user == null) {
                 _logger.Info($"Unknown user {Username} tried to login");
             } else if (!user.password.Equals(Password)) {

@@ -2,20 +2,12 @@ namespace Data.User {
 
     internal class UserRepository {
 
-        private static int id = 100;
-
-        private List<User> users = new List<User>();
-
-        public UserRepository() {
-            users.Add(new User(0, "admin", "admin"));
-            users.Add(new User(1, "test", "test"));
-        }
-
-        public User? findByUsername(string username) {
+        public User? FindByUsername(string username) {
             return users.Find(user => user.username.Equals(username));
         }
 
-        public User save(User user) {
+        public User Save(User user) {
+            string insert = @"INSERT INTO users INSERT INTO player (id, username, password) VALUES (id:integer, 'username:text', 'password:text');";
             users.Add(user);
             user.Id = id++;
             return user;

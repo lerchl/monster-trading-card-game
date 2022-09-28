@@ -1,8 +1,7 @@
 namespace Data.User {
 
-    internal class User {
+    internal class User : Entity {
 
-        public int Id { get; set; }
         public readonly string username;
         public readonly string password;
 
@@ -13,10 +12,6 @@ namespace Data.User {
         public User(string username, string password) {
             this.username = username;
             this.password = password;
-        }
-
-        public User(int id, string username, string password) : this(username, password) {
-            this.Id = id;
         }
     }
 }
