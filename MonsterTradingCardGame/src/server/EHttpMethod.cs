@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Api {
 
-    internal enum EHttpMethod {
+    public enum EHttpMethod {
 
         GET,
         POST,

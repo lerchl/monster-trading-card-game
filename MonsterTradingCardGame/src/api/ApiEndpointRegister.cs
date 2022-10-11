@@ -2,14 +2,13 @@ using System.Reflection;
 using MonsterTradingCardGame.Server;
 using Newtonsoft.Json.Linq;
 
-namespace MonsterTradingCardGame.Api
-{
+namespace MonsterTradingCardGame.Api {
 
-    internal class ApiEndpointRegister {
+    public class ApiEndpointRegister {
 
         private static readonly Logger<ApiEndpointRegister> _logger = new();
 
-        public readonly Dictionary<Destination, MethodInfo> endpointTable = new();
+        private readonly Dictionary<Destination, MethodInfo> endpointTable = new();
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor

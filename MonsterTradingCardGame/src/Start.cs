@@ -16,7 +16,7 @@ namespace MonsterTradingCardGame {
             // ServerSocket server = new(10001);
 
             PlayerRepository playerRepository = new();
-            playerRepository.Save(new Player("test", "test"));
+            playerRepository.FindById("bdac2854-04d1-4c6d-82fe-979dda81f9fa");
 
             // SERVER STUFF
 

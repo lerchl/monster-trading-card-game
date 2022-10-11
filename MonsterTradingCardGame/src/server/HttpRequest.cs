@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MonsterTradingCardGame.Server {
 
-    internal class HttpRequest {
+    public class HttpRequest {
 
         public readonly Destination destination;
         public readonly JObject data;

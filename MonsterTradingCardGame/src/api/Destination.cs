@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Api {
 
-    internal class Destination {
+    public class Destination {
 
         public readonly EHttpMethod method;
         public readonly string endpoint;
