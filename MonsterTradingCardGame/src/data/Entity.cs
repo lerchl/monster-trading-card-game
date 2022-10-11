@@ -2,7 +2,7 @@ namespace MonsterTradingCardGame.Data {
 
     internal abstract class Entity {
 
-        public readonly string? id;
+        public readonly Guid? id;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructors
@@ -12,7 +12,7 @@ namespace MonsterTradingCardGame.Data {
             // default constructor
         }
 
-        public Entity(string? id) {
+        public Entity(Guid id) {
             this.id = id;
         }
     }

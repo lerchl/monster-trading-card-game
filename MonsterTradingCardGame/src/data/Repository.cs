@@ -1,8 +1,6 @@
-using System.Runtime.Intrinsics.X86;
 using System.Reflection;
 using System.Text;
 using Npgsql;
-using Npgsql.Internal.TypeHandlers;
 
 namespace MonsterTradingCardGame.Data {
 
@@ -14,7 +12,7 @@ namespace MonsterTradingCardGame.Data {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public T Save(T entity) {
+        public T? Save(T entity) {
             if (entity.id == null) {
                 return Insert(entity);
             } else {
@@ -27,22 +25,17 @@ namespace MonsterTradingCardGame.Data {
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
 
             if (!result.Read()) {
+                result.Close();
                 return null;
             }
 
-            
-            result.GetFieldValue<object>(0);
-
-            Console.WriteLine(result.GetGuid(0));
-            Console.WriteLine(result.GetString(1));
-            Console.WriteLine(result.GetString(2));
-            return null;
+            return ConstructEntity(result);
         }
 
         // Save
         // /////////////////////////////////////////////////////////////////////
 
-        private T Insert(T entity) {
+        private T? Insert(T entity) {
             FieldInfo[] fields = typeof(T).GetFields();
             string query = $"INSERT INTO {typeof(T).Name} ({FieldsToString(fields)}) VALUES ({ValuesOfFieldsToString(fields, entity)}) RETURNING id;";
             var uuid = new NpgsqlCommand(query, _entityManager.connection).ExecuteScalar();
@@ -77,18 +70,15 @@ namespace MonsterTradingCardGame.Data {
             return sb.ToString()[..^1];
         }
 
-        private T Update(T entity) {
+        private T? Update(T entity) {
             FieldInfo[] fields = typeof(T).GetFields();
 
-            string query = @"UPDATE $1 SET $2 WHERE id = $3;";
+            string query = $"UPDATE {typeof(T).Name} SET {FieldAndValuePairsToString(fields, entity)} WHERE id = :id RETURNING id;";
             var result = new NpgsqlCommand(query, _entityManager.connection) {
-                Parameters = {
-                    new("$1", typeof(T).Name),
-                    new("$2", FieldAndValuePairsToString(fields, entity)),
-                    new("$3", entity.id)
-                }
+                Parameters = { new(":id", entity.id) }
             }.ExecuteScalar();
-            return entity;
+
+            return FindById(result.ToString());
         }
 
         private static string FieldAndValuePairsToString(FieldInfo[] fields, T entity) {
@@ -97,11 +87,29 @@ namespace MonsterTradingCardGame.Data {
                 if (field.Name != "id") {
                     sb.Append(field.Name);
                     sb.Append(" = ");
-                    sb.Append(field.GetValue(entity));
+
+                    if (field.FieldType == typeof(string)) {
+                        sb.Append('\'');
+                        sb.Append(field.GetValue(entity));
+                        sb.Append('\'');
+                    } else {
+                        sb.Append(field.GetValue(entity));
+                    }
+
                     sb.Append(',');
                 }
             }
             return sb.ToString()[..^1];
+        }
+
+        private static T? ConstructEntity(NpgsqlDataReader result) {
+            object[] values = new object[result.FieldCount];
+            for (int i = 0; i < result.FieldCount; i++) {
+                values[i] = result.GetValue(i);
+            }
+            result.Close();
+
+            return typeof(T).GetConstructors()[0].Invoke(values) as T;
         }
     }
 }
