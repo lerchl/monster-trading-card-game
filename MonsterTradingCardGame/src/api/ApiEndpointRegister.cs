@@ -40,13 +40,18 @@ namespace MonsterTradingCardGame.Api {
             if (endpointTable.ContainsKey(destination)) {
                 MethodInfo methodInfo = endpointTable[destination];
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                object[] parameters = new object[parameterInfos.Length];
-                for (int i = 0; i < parameterInfos.Length; i++) {
-                    ParameterInfo parameterInfo = parameterInfos[i];
-                    // TODO: Check if the value is present first and answert with an error if not
-                    parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
+
+                if (parameterInfos.Length > 0) {
+                    object[] parameters = new object[parameterInfos.Length];
+                    for (int i = 0; i < parameterInfos.Length; i++) {
+                        ParameterInfo parameterInfo = parameterInfos[i];
+                        // TODO: Check if the value is present first and answert with an error if not
+                        parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
+                    }
+                    methodInfo.Invoke(null, parameters);
+                } else {
+                    methodInfo.Invoke(null, null);
                 }
-                methodInfo.Invoke(null, parameters);
             } else {
                 _logger.Warn($"No endpoint found for {destination}");
             }
