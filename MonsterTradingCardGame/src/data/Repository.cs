@@ -23,16 +23,15 @@ namespace MonsterTradingCardGame.Data {
         public T? FindById(string id) {
             string query = $"SELECT * FROM {typeof(T).Name} WHERE id = '{id}';";
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
+            return ConstructEntity(result);
+        }
 
+        protected static T? ConstructEntity(NpgsqlDataReader result) {
             if (!result.Read()) {
                 result.Close();
                 return null;
             }
 
-            return ConstructEntity(result);
-        }
-
-        protected static T? ConstructEntity(NpgsqlDataReader result) {
             object[] values = new object[result.FieldCount];
             for (int i = 0; i < result.FieldCount; i++) {
                 values[i] = result.GetValue(i);

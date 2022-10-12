@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using System.Reflection;
 using MonsterTradingCardGame.Server;
 using Newtonsoft.Json.Linq;
@@ -34,24 +35,21 @@ namespace MonsterTradingCardGame.Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public void Execute(HttpRequest httpRequest) {
+        public void Execute(HttpRequest httpRequest, Socket client) {
             Destination destination = httpRequest.destination;
 
             if (endpointTable.ContainsKey(destination)) {
                 MethodInfo methodInfo = endpointTable[destination];
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
 
-                if (parameterInfos.Length > 0) {
-                    object[] parameters = new object[parameterInfos.Length];
-                    for (int i = 0; i < parameterInfos.Length; i++) {
-                        ParameterInfo parameterInfo = parameterInfos[i];
-                        // TODO: Check if the value is present first and answert with an error if not
-                        parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
-                    }
-                    methodInfo.Invoke(null, parameters);
-                } else {
-                    methodInfo.Invoke(null, null);
+                object[] parameters = new object[parameterInfos.Length];
+                parameters[0] = client;
+                for (int i = 1; i < parameterInfos.Length; i++) {
+                    ParameterInfo parameterInfo = parameterInfos[i];
+                    // TODO: Check if the value is present first and answer with an error if not
+                    parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
                 }
+                methodInfo.Invoke(null, parameters);
             } else {
                 _logger.Warn($"No endpoint found for {destination}");
             }

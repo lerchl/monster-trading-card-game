@@ -55,9 +55,8 @@ namespace MonsterTradingCardGame.Server {
             HttpRequest request = ParseRequest(text);
             _logger.Info($"Received {request.destination.method} request for {request.destination.endpoint} from {endPoint}");
 
-            _endpointRegister.Execute(request);
+            _endpointRegister.Execute(request, client);
 
-            client.Send(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n"));
             client.Disconnect(true);
         }
 
