@@ -13,8 +13,8 @@ namespace MonsterTradingCardGame.Server {
         private static readonly Logger<ServerSocket> _logger = new();
 
         private readonly ApiEndpointRegister _endpointRegister = new(typeof(Authentication));
-
         private readonly Socket _serverSocket;
+        private bool wait = false;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
@@ -30,7 +30,12 @@ namespace MonsterTradingCardGame.Server {
             _logger.Info("Listening on port " + port);
             
             for (;;) {
-                _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), _serverSocket);
+                if (!wait) {
+                    _logger.Info("Accepting new connection");
+                    _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), _serverSocket);
+                    wait = true;
+                }
+                Thread.Sleep(100);
             }
         }
 
@@ -39,17 +44,21 @@ namespace MonsterTradingCardGame.Server {
         // /////////////////////////////////////////////////////////////////////
     
         private void AcceptCallback(IAsyncResult ar) {
+            wait = false;
+
             Socket client = _serverSocket.EndAccept(ar);
             EndPoint? endPoint = client.RemoteEndPoint;
             byte[] buffer = new byte[2048];
             int length = client.Receive(buffer);
-            client.Disconnect(true);
 
             string text = Encoding.ASCII.GetString(buffer, 0, length);
             HttpRequest request = ParseRequest(text);
             _logger.Info($"Received {request.destination.method} request for {request.destination.endpoint} from {endPoint}");
 
             _endpointRegister.Execute(request);
+
+            client.Send(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\n\r\n"));
+            client.Disconnect(true);
         }
 
         private static HttpRequest ParseRequest(string text) {

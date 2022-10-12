@@ -32,6 +32,16 @@ namespace MonsterTradingCardGame.Data {
             return ConstructEntity(result);
         }
 
+        protected static T? ConstructEntity(NpgsqlDataReader result) {
+            object[] values = new object[result.FieldCount];
+            for (int i = 0; i < result.FieldCount; i++) {
+                values[i] = result.GetValue(i);
+            }
+            result.Close();
+
+            return typeof(T).GetConstructors()[0].Invoke(values) as T;
+        }
+
         // Save
         // /////////////////////////////////////////////////////////////////////
 
@@ -100,16 +110,6 @@ namespace MonsterTradingCardGame.Data {
                 }
             }
             return sb.ToString()[..^1];
-        }
-
-        private static T? ConstructEntity(NpgsqlDataReader result) {
-            object[] values = new object[result.FieldCount];
-            for (int i = 0; i < result.FieldCount; i++) {
-                values[i] = result.GetValue(i);
-            }
-            result.Close();
-
-            return typeof(T).GetConstructors()[0].Invoke(values) as T;
         }
     }
 }
