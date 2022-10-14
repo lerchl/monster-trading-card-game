@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using MonsterTradingCardGame;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Data.Player;
+using MonsterTradingCardGame.Server;
 
 namespace Api.Endpoints {
 
@@ -20,13 +21,13 @@ namespace Api.Endpoints {
             Player? user = _playerRepository.FindByUsername(Username);
             if (user == null) {
                 _logger.Info($"Unknown user {Username} tried to login");
-                ApiEndpointUtils.SendResponse(client, 401, "Unauthorized");
+                ApiEndpointUtils.SendResponse(client, HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else if (!user.password.Equals(Password)) {
                 _logger.Info($"User {Username} tried to login with the wrong password");
-                ApiEndpointUtils.SendResponse(client, 401, "Unauthorized");
+                ApiEndpointUtils.SendResponse(client, HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else {
                 _logger.Info($"User {Username} has logged in");
-                ApiEndpointUtils.SendResponse(client, 200, "OK");
+                ApiEndpointUtils.SendResponse(client, HttpCode.OK_200);
             }
         }
     }
