@@ -12,6 +12,7 @@ namespace MonsterTradingCardGame.Server {
         public static HttpCode UNAUTHORIZED_401 = new(401, "Unauthorized");
         public static HttpCode FORBIDDEN_403 = new(403, "Forbidden");
         public static HttpCode NOT_FOUND_404 = new(404, "Not Found");
+        public static HttpCode CONFLICT_409 = new(409, "Conflict");
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
