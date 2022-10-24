@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Api.Endpoints;
 using MonsterTradingCardGame.Api;
+using MonsterTradingCardGame.Api.Endpoints;
 using Newtonsoft.Json.Linq;
 
 namespace MonsterTradingCardGame.Server {
@@ -12,7 +13,7 @@ namespace MonsterTradingCardGame.Server {
 
         private static readonly Logger<ServerSocket> _logger = new();
 
-        private readonly ApiEndpointRegister _endpointRegister = new(typeof(Authentication));
+        private readonly ApiEndpointRegister _endpointRegister = new(typeof(Authentication), typeof(Packages));
         private readonly Socket _serverSocket;
         private bool wait = false;
 
@@ -65,13 +66,16 @@ namespace MonsterTradingCardGame.Server {
             Regex requestRegex = new(requestPattern);
             Match requestMatch = requestRegex.Match(text);
 
-            string dataPattern = @"(\{.*\})";
+            string dataPattern = @"(\[?\{.*\}\]?)";
             Regex dataRegex = new(dataPattern);
             Match dataMatch = dataRegex.Match(text);
 
             string httpMethod = requestMatch.Groups["httpMethod"].Value;
             _ = Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod);
             string apiEndpoint = requestMatch.Groups["endpoint"].Value;
+
+            Console.WriteLine(dataMatch.Value);
+
             JObject data = JObject.Parse(dataMatch.Value);
 
             return new HttpRequest(new(eHttpMethod, apiEndpoint), data);

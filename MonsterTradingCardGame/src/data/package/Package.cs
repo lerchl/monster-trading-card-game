@@ -2,17 +2,19 @@ using MonsterTradingCardGame.Data.Cards;
 
 namespace MonsterTradingCardGame.Data.Packages {
 
-    internal class Package {
+    internal class Package : Entity {
 
-        public readonly string id;
         public readonly List<Card> cards;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Package(string id, List<Card> cards) {
-            this.id = id;
+        public Package(Guid id, List<Card> cards) : base(id) {
+            this.cards = cards;
+        }
+
+        public Package(List<Card> cards) {
             this.cards = cards;
         }
     }

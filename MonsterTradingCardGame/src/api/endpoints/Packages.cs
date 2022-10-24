@@ -1,3 +1,6 @@
+using System.Net.Sockets;
+using MonsterTradingCardGame.Data.Packages;
+
 namespace MonsterTradingCardGame.Api.Endpoints {
 
     internal class Packages {
@@ -5,8 +8,8 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         private const string URL = "/packages";
 
         [ApiEndpoint(httpMethod = EHttpMethod.POST, url = URL)]
-        public static void CreatePackage() {
-            // TODO: Liste bzw Array an (5) Karten übergeben
+        public static void CreatePackage(Socket client, Package[] packages) {
+            Console.WriteLine(packages);
         }
 
         [ApiEndpoint(httpMethod = EHttpMethod.POST, url = "/transactions" + URL)]

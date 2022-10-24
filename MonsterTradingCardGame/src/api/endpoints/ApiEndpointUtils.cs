@@ -1,6 +1,5 @@
 using System.Net.Sockets;
 using System.Text;
-using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Server;
 
 namespace Api.Endpoints {
