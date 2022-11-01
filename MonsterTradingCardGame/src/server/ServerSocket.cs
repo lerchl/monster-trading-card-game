@@ -70,15 +70,18 @@ namespace MonsterTradingCardGame.Server {
             Regex dataRegex = new(dataPattern);
             Match dataMatch = dataRegex.Match(text);
 
+            string arrayPattern = @"(\[\{.*\}\])";
+            Regex arrayRegex = new(arrayPattern);
+            bool isArray = arrayRegex.IsMatch(text);
+
             string httpMethod = requestMatch.Groups["httpMethod"].Value;
             _ = Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod);
             string apiEndpoint = requestMatch.Groups["endpoint"].Value;
 
             Console.WriteLine(dataMatch.Value);
 
-            JObject data = JObject.Parse(dataMatch.Value);
-
-            return new HttpRequest(new(eHttpMethod, apiEndpoint), data);
+            
+            return new HttpRequest(new(eHttpMethod, apiEndpoint), JContainer.Parse(dataMatch.Value));
         }
     }
 }

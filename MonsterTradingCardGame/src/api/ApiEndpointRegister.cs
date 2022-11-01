@@ -44,11 +44,17 @@ namespace MonsterTradingCardGame.Api {
 
                 object[] parameters = new object[parameterInfos.Length];
                 parameters[0] = client;
-                for (int i = 1; i < parameterInfos.Length; i++) {
-                    ParameterInfo parameterInfo = parameterInfos[i];
-                    // TODO: Check if the value is present first and answer with an error if not
-                    parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
+
+                if (parameterInfos.Length == 2 && parameterInfos[1].ParameterType.IsArray) {
+                    parameters[1] = httpRequest.data;
+                } else {
+                    for (int i = 1; i < parameterInfos.Length; i++) {
+                        ParameterInfo parameterInfo = parameterInfos[i];
+                        // TODO: Check if the value is present first and answer with an error if not
+                        parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
+                    }
                 }
+
                 methodInfo.Invoke(null, parameters);
             } else {
                 _logger.Warn($"No endpoint found for {destination}");

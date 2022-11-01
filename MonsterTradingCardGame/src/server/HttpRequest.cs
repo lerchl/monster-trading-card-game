@@ -6,13 +6,13 @@ namespace MonsterTradingCardGame.Server {
     public class HttpRequest {
 
         public readonly Destination destination;
-        public readonly JObject? data;
+        public readonly JToken? data;
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public HttpRequest(Destination destination, JObject? data) {
+        public HttpRequest(Destination destination, JToken? data) {
             this.destination = destination;
             this.data = data;
         }
