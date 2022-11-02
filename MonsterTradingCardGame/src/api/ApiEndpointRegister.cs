@@ -58,9 +58,9 @@ namespace MonsterTradingCardGame.Api {
 
         private static object? ParseParameter(ParameterInfo parameterInfo, HttpRequest httpRequest) {
             var attributes = parameterInfo.GetCustomAttributesData();
-            if (attributes.Any(cad => cad.GetType() == typeof(Body))) {
+            if (attributes.Any(cad => cad.AttributeType == typeof(Body))) {
                 return new JsonSerializer().Deserialize(httpRequest.data, parameterInfo.ParameterType);
-            } else if (attributes.Any(cad => cad.GetType() == typeof(Header))) {
+            } else if (attributes.Any(cad => cad.AttributeType == typeof(Header))) {
                 // TODO: return value of header key from request
                 return null;
             }

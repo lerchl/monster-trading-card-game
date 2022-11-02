@@ -16,14 +16,14 @@ namespace Api.Endpoints {
         // /////////////////////////////////////////////////////////////////////
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/sessions")]
-        public static Response Login(Player player) {
-            string username = player.username;
+        public static Response Login([Body] Player player) {
+            string username = player.Username;
             Player? dbPlayer = _playerRepository.FindByUsername(username);
 
             if (dbPlayer == null) {
                 _logger.Info($"Unknown user {username} tried to login");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
-            } else if (!dbPlayer.password.Equals(username)) {
+            } else if (!dbPlayer.Password.Equals(username)) {
                 _logger.Info($"User {username} tried to login with the wrong password");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else {
@@ -34,8 +34,8 @@ namespace Api.Endpoints {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/users")]
-        public static Response Register(Player player) {
-            string username = player.username;
+        public static Response Register([Body] Player player) {
+            string username = player.Username;
             Player? dbPlayer = _playerRepository.FindByUsername(username);
 
             if (dbPlayer == null) {

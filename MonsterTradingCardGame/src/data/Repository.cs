@@ -13,7 +13,7 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         public T? Save(T entity) {
-            if (entity.id == null) {
+            if (entity.id == null || entity.id == Guid.Empty) {
                 return Insert(entity);
             } else {
                 return Update(entity);
@@ -45,33 +45,33 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         private T? Insert(T entity) {
-            FieldInfo[] fields = typeof(T).GetFields();
-            string query = $"INSERT INTO {typeof(T).Name} ({FieldsToString(fields)}) VALUES ({ValuesOfFieldsToString(fields, entity)}) RETURNING id;";
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            string query = $"INSERT INTO {typeof(T).Name} ({PropertiesToString(properties)}) VALUES ({ValuesOfPropertiesToString(properties, entity)}) RETURNING id;";
             var uuid = new NpgsqlCommand(query, _entityManager.connection).ExecuteScalar();
             return FindById(uuid.ToString());
         }
 
-        private static string FieldsToString(FieldInfo[] fields) {
+        private static string PropertiesToString(PropertyInfo[] properties) {
             StringBuilder sb = new();
-            foreach (FieldInfo field in fields) {
-                if (field.Name != "id") {
-                    sb.Append(field.Name);
+            foreach (PropertyInfo property in properties) {
+                if (property.Name != "id") {
+                    sb.Append(property.Name);
                     sb.Append(',');
                 }
             }
             return sb.ToString()[..^1];
         }
 
-        private static string ValuesOfFieldsToString(FieldInfo[] fields, T entity) {
+        private static string ValuesOfPropertiesToString(PropertyInfo[] properties, T entity) {
             StringBuilder sb = new();
-            foreach (FieldInfo field in fields) {
-                if (field.Name != "id") {
-                    if (field.FieldType == typeof(string)) {
+            foreach (PropertyInfo property in properties) {
+                if (property.Name != "id") {
+                    if (property.PropertyType == typeof(string)) {
                         sb.Append('\'');
-                        sb.Append(field.GetValue(entity));
+                        sb.Append(property.GetValue(entity));
                         sb.Append('\'');
                     } else {
-                        sb.Append(field.GetValue(entity));
+                        sb.Append(property.GetValue(entity));
                     }
                     sb.Append(',');
                 }
@@ -80,9 +80,9 @@ namespace MonsterTradingCardGame.Data {
         }
 
         private T? Update(T entity) {
-            FieldInfo[] fields = typeof(T).GetFields();
+            PropertyInfo[] properties = typeof(T).GetProperties();
 
-            string query = $"UPDATE {typeof(T).Name} SET {FieldAndValuePairsToString(fields, entity)} WHERE id = :id RETURNING id;";
+            string query = $"UPDATE {typeof(T).Name} SET {FieldAndValuePairsToString(properties, entity)} WHERE id = :id RETURNING id;";
             var result = new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = { new(":id", entity.id) }
             }.ExecuteScalar();
@@ -90,25 +90,25 @@ namespace MonsterTradingCardGame.Data {
             return FindById(result.ToString());
         }
 
-        private static string FieldAndValuePairsToString(FieldInfo[] fields, T entity) {
+        private static string FieldAndValuePairsToString(PropertyInfo[] properties, T entity) {
             StringBuilder sb = new();
-            foreach (FieldInfo field in fields) {
-                if (field.Name != "id") {
-                    sb.Append(field.Name);
+            foreach (PropertyInfo property in properties) {
+                if (property.Name != "id") {
+                    sb.Append(property.Name);
                     sb.Append(" = ");
 
-                    if (field.FieldType == typeof(string)) {
+                    if (property.PropertyType == typeof(string)) {
                         sb.Append('\'');
-                        sb.Append(field.GetValue(entity));
+                        sb.Append(property.GetValue(entity));
                         sb.Append('\'');
                     } else {
-                        sb.Append(field.GetValue(entity));
+                        sb.Append(property.GetValue(entity));
                     }
 
-                    sb.Append(',');
+                    sb.Append(", ");
                 }
             }
-            return sb.ToString()[..^1];
+            return sb.ToString()[..^2];
         }
     }
 }
