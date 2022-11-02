@@ -14,6 +14,10 @@ namespace MonsterTradingCardGame {
             Log("WARN", message);
         }
 
+        public void Error(string message) {
+            Log("ERRO", message);
+        }
+
         private void Log(string level, string message) {
             Console.WriteLine($"[{level}] ({DateTime.Now:HH:mm:ss}) {message} ::: {typeof(T).Name}");
         }

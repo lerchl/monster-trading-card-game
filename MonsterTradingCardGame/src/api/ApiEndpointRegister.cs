@@ -1,7 +1,6 @@
-using System.Net.Sockets;
 using System.Reflection;
 using MonsterTradingCardGame.Server;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame.Api {
 
@@ -22,7 +21,7 @@ namespace MonsterTradingCardGame.Api {
                     var attribute = methodInfo.GetCustomAttributesData()
                             .FirstOrDefault(cad => cad.AttributeType == typeof(ApiEndpoint));
                     if (attribute != null) {
-                        Console.WriteLine("[INFO] Found endpoint {0}", methodInfo.Name);
+                        _logger.Info("Found endpoint " + methodInfo.Name);
                         EHttpMethod httpMethod = (EHttpMethod) attribute.NamedArguments[0].TypedValue.Value;
                         string url = (string) attribute.NamedArguments[1].TypedValue.Value;
                         endpointTable.TryAdd(new Destination(httpMethod, url), methodInfo);
@@ -35,30 +34,38 @@ namespace MonsterTradingCardGame.Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public void Execute(HttpRequest httpRequest, Socket client) {
+        public Response Execute(HttpRequest httpRequest) {
             Destination destination = httpRequest.destination;
 
             if (endpointTable.ContainsKey(destination)) {
                 MethodInfo methodInfo = endpointTable[destination];
                 ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                var parameters = parameterInfos.Select((parameterInfo, index) => ParseParameter(parameterInfo, httpRequest)).ToArray();
+                var returnValue = methodInfo.Invoke(null, parameters);
 
-                object[] parameters = new object[parameterInfos.Length];
-                parameters[0] = client;
-
-                if (parameterInfos.Length == 2 && parameterInfos[1].ParameterType.IsArray) {
-                    parameters[1] = httpRequest.data;
-                } else {
-                    for (int i = 1; i < parameterInfos.Length; i++) {
-                        ParameterInfo parameterInfo = parameterInfos[i];
-                        // TODO: Check if the value is present first and answer with an error if not
-                        parameters[i] = httpRequest.data[parameterInfo.Name].Value<string>();
-                    }
+                if (returnValue is Response response) {
+                    return response;
                 }
 
-                methodInfo.Invoke(null, parameters);
+                throw new ProgrammerFailException($"Return value of method '{methodInfo.Name}' " +
+                                                  $"for {destination.method}-Request " +
+                                                  $"to {destination.endpoint} is not of type Response");
             } else {
                 _logger.Warn($"No endpoint found for {destination}");
+                throw new NoSuchDestinationException(destination);
             }
+        }
+
+        private static object? ParseParameter(ParameterInfo parameterInfo, HttpRequest httpRequest) {
+            var attributes = parameterInfo.GetCustomAttributesData();
+            if (attributes.Any(cad => cad.GetType() == typeof(Body))) {
+                return new JsonSerializer().Deserialize(httpRequest.data, parameterInfo.ParameterType);
+            } else if (attributes.Any(cad => cad.GetType() == typeof(Header))) {
+                // TODO: return value of header key from request
+                return null;
+            }
+            // TODO: implement query parameters
+            return null;
         }
     }
 }

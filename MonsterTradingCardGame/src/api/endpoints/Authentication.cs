@@ -1,4 +1,3 @@
-using System.Net.Sockets;
 using MonsterTradingCardGame;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Data.Player;
@@ -16,32 +15,36 @@ namespace Api.Endpoints {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        [ApiEndpoint(httpMethod = EHttpMethod.POST, url = "/sessions")]
-        public static void Login(Socket client, string Username, string Password) {
-            Player? user = _playerRepository.FindByUsername(Username);
-            if (user == null) {
-                _logger.Info($"Unknown user {Username} tried to login");
-                ApiEndpointUtils.SendResponse(client, HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
-            } else if (!user.password.Equals(Password)) {
-                _logger.Info($"User {Username} tried to login with the wrong password");
-                ApiEndpointUtils.SendResponse(client, HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/sessions")]
+        public static Response Login(Player player) {
+            string username = player.username;
+            Player? dbPlayer = _playerRepository.FindByUsername(username);
+
+            if (dbPlayer == null) {
+                _logger.Info($"Unknown user {username} tried to login");
+                return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
+            } else if (!dbPlayer.password.Equals(username)) {
+                _logger.Info($"User {username} tried to login with the wrong password");
+                return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else {
-                _logger.Info($"User {Username} has logged in");
+                _logger.Info($"User {username} has logged in");
                 // TODO: send bearer token
-                ApiEndpointUtils.SendResponse(client, HttpCode.OK_200);
+                return new Response(HttpCode.OK_200);
             }
         }
 
-        [ApiEndpoint(httpMethod = EHttpMethod.POST, url = "/users")]
-        public static void Register(Socket client, string Username, string Password) {
-            Player? user = _playerRepository.FindByUsername(Username);
-            if (user == null) {
-                _playerRepository.Save(new Player(Username, Password));
-                _logger.Info($"User {Username} has registered");
-                ApiEndpointUtils.SendResponse(client, HttpCode.CREATED_201);
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/users")]
+        public static Response Register(Player player) {
+            string username = player.username;
+            Player? dbPlayer = _playerRepository.FindByUsername(username);
+
+            if (dbPlayer == null) {
+                _playerRepository.Save(player);
+                _logger.Info($"User {username} has registered");
+                return new Response(HttpCode.CREATED_201);
             } else {
-                _logger.Info($"User {Username} tried to register but the username is already taken");
-                ApiEndpointUtils.SendResponse(client, HttpCode.CONFLICT_409, "{message: \"username already taken\"}");
+                _logger.Info($"User {username} tried to register but the username is already taken");
+                return new Response(HttpCode.CONFLICT_409, "{message: \"username already taken\"}");
             }
         }
     }

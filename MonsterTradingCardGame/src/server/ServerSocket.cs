@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Api.Endpoints;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Api.Endpoints;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MonsterTradingCardGame.Server {
@@ -56,8 +57,18 @@ namespace MonsterTradingCardGame.Server {
             HttpRequest request = ParseRequest(text);
             _logger.Info($"Received {request.destination.method} request for {request.destination.endpoint} from {endPoint}");
 
-            _endpointRegister.Execute(request, client);
+            Response response;
+            try {
+                response = _endpointRegister.Execute(request);
+            } catch (NoSuchDestinationException) {
+                response = new Response(HttpCode.NOT_FOUND_404);
+            } catch (ProgrammerFailException e) {
+                response = new Response(HttpCode.INTERNAL_SERVER_ERROR_500);
+                _logger.Error(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
 
+            SendResponse(client, response);
             client.Disconnect(true);
         }
 
@@ -70,18 +81,29 @@ namespace MonsterTradingCardGame.Server {
             Regex dataRegex = new(dataPattern);
             Match dataMatch = dataRegex.Match(text);
 
-            string arrayPattern = @"(\[\{.*\}\])";
-            Regex arrayRegex = new(arrayPattern);
-            bool isArray = arrayRegex.IsMatch(text);
-
             string httpMethod = requestMatch.Groups["httpMethod"].Value;
             _ = Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod);
             string apiEndpoint = requestMatch.Groups["endpoint"].Value;
+            return new HttpRequest(new(eHttpMethod, apiEndpoint), new JsonTextReader(new StringReader(dataMatch.Value)));
+        }
 
-            Console.WriteLine(dataMatch.Value);
+        private static void SendResponse(Socket client, Response response) {
+            int length = response.Body == null ? 0 : response.Body.Length;
 
-            
-            return new HttpRequest(new(eHttpMethod, apiEndpoint), JContainer.Parse(dataMatch.Value));
+            StringBuilder sb = new($"HTTP/1.1 {response.HttpCode.Code} {response.HttpCode.Message}\r\n");
+            sb.Append($"Date: {DateTime.Now}\r\n");
+            sb.Append("Connection: close\r\n");
+            sb.Append("Server: MonsterTradingCardGame .NET/6.0\r\n");
+            sb.Append($"Content-Length: {length}\r\n");
+
+            if (response.Body != null) {
+                sb.Append("Content-Type: application/json\r\n\r\n");
+                sb.Append(response.Body);
+            } else {
+                sb.Append("\r\n");
+            }
+
+            client.Send(Encoding.ASCII.GetBytes(sb.ToString()));
         }
     }
 }

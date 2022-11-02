@@ -7,12 +7,12 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         private const string URL = "/packages";
 
-        [ApiEndpoint(httpMethod = EHttpMethod.POST, url = URL)]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = URL)]
         public static void CreatePackage(Socket client, Package[] packages) {
             Console.WriteLine(packages);
         }
 
-        [ApiEndpoint(httpMethod = EHttpMethod.POST, url = "/transactions" + URL)]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/transactions" + URL)]
         public static void BuyPackages() {
             // TODO: Geld des Users prüfen, dann random Package kaufen
         }
