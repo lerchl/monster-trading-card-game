@@ -1,15 +1,13 @@
-using System.Net.Sockets;
 using MonsterTradingCardGame.Api;
+using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Test {
 
     internal class DummyApiEndpoint {
 
-        public static bool Invoked { get; private set; }
-
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = "/dummy")]
-        public static void TestEndpoint() {
-            Invoked = true;
+        public static Response TestEndpoint() {
+            return new Response(HttpCode.OK_200, "Test");
         }
     }
 }
