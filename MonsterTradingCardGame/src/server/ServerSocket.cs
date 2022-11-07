@@ -6,7 +6,6 @@ using Api.Endpoints;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Api.Endpoints;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace MonsterTradingCardGame.Server {
 

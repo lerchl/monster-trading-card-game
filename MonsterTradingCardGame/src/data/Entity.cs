@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Data {
 
-    internal abstract class Entity {
+    public abstract class Entity {
 
         public readonly Guid? id;
 
@@ -14,6 +14,14 @@ namespace MonsterTradingCardGame.Data {
 
         public Entity(Guid id) {
             this.id = id;
+        }
+
+        // /////////////////////////////////////////////////////////////////////
+        // Methods
+        // /////////////////////////////////////////////////////////////////////
+
+        public bool IsPersisted() {
+            return id != null && id != Guid.Empty;
         }
     }
 }

@@ -4,18 +4,18 @@ namespace MonsterTradingCardGame.Data.Packages {
 
     internal class Package : Entity {
 
-        public readonly List<Card> cards;
+        public List<Card> Cards { get; set; }
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
         public Package(Guid id, List<Card> cards) : base(id) {
-            this.cards = cards;
+            Cards = cards;
         }
 
         public Package(List<Card> cards) {
-            this.cards = cards;
+            Cards = cards;
         }
     }
 }

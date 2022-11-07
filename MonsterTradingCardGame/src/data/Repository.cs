@@ -13,10 +13,10 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         public T? Save(T entity) {
-            if (entity.id == null || entity.id == Guid.Empty) {
-                return Insert(entity);
-            } else {
+            if (entity.IsPersisted()) {
                 return Update(entity);
+            } else {
+                return Insert(entity);
             }
         }
 

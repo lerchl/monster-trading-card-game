@@ -1,3 +1,5 @@
+using System.Text.Json;
+using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Api {
@@ -19,6 +21,11 @@ namespace MonsterTradingCardGame.Api {
         public Response(HttpCode httpCode, string? body = null) {
             HttpCode = httpCode;
             Body = body;
+        }
+
+        public Response(HttpCode httpCode, Entity entity) {
+            HttpCode = httpCode;
+            Body = JsonSerializer.Serialize(entity);
         }
     }
 }

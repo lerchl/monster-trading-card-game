@@ -1,21 +1,21 @@
 namespace MonsterTradingCardGame.Data.Cards {
 
-    internal abstract class Card {
+    internal class Card : Entity {
 
-        public readonly string id;
-        public readonly string name;
-        public readonly ElementType elementType;
-        public readonly int damage;
+        public string Name { get; set; }
+        public ElementType ElementType { get; set; }
+        public double Damage { get; set; }
+        public CardType CardType { get; set; }
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Card(string id, string name, ElementType elementType, int damage) {
-            this.id = id;
-            this.name = name;
-            this.elementType = elementType;
-            this.damage = damage;
+        public Card(string name, ElementType elementType, double damage, CardType cardType) {
+            Name = name;
+            ElementType = elementType;
+            Damage = damage;
+            CardType = cardType;
         }
     }
 }
