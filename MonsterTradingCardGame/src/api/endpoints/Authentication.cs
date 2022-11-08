@@ -23,7 +23,7 @@ namespace Api.Endpoints {
             if (dbPlayer == null) {
                 _logger.Info($"Unknown user {username} tried to login");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
-            } else if (!dbPlayer.Password.Equals(username)) {
+            } else if (!dbPlayer.Password.Equals(player.Password)) {
                 _logger.Info($"User {username} tried to login with the wrong password");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else {
