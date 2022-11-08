@@ -3,3 +3,16 @@ CREATE TABLE PLAYER (
     USERNAME TEXT   UNIQUE      NOT NULL,
     PASSWORD TEXT               NOT NULL
 );
+
+CREATE TABLE PACKAGE (
+    ID UUID PRIMARY KEY DEFAULT gen_random_uuid()
+);
+
+CREATE TABLE CARD (
+    ID           UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
+    NAME         TEXT    UNIQUE      NOT NULL,
+    ELEMENT_TYPE INTEGER             NOT NULL,
+    DAMAGE       DECIMAL             NOT NULL,
+    CARD_TYPE    INTEGER             NOT NULL,
+    PACKAGE_ID   UUID                NOT NULL REFERENCES PACKAGE (ID) ON DELETE CASCADE
+);

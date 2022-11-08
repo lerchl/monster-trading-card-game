@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Data.Cards {
 
-    internal class CardRepository {
+    internal class CardRepository : Repository<Card> {
 
         public List<Card> FindAllByUser() {
             // TODO: Pass user, either id or object and find their cards.

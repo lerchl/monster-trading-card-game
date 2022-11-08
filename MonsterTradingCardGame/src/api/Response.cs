@@ -23,7 +23,7 @@ namespace MonsterTradingCardGame.Api {
             Body = body;
         }
 
-        public Response(HttpCode httpCode, Entity entity) {
+        public Response(HttpCode httpCode, object entity) {
             HttpCode = httpCode;
             Body = JsonSerializer.Serialize(entity);
         }
