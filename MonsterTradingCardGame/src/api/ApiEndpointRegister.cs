@@ -18,6 +18,7 @@ namespace MonsterTradingCardGame.Api {
             foreach (Type endpoint in endpoints) {
                 MethodInfo[] methodInfos = endpoint.GetMethods();
                 foreach (MethodInfo methodInfo in methodInfos) {
+                    // TODO: durch GetCustomAttribute ersetzen
                     var attribute = methodInfo.GetCustomAttributesData()
                             .FirstOrDefault(cad => cad.AttributeType == typeof(ApiEndpoint));
                     if (attribute != null) {

@@ -55,7 +55,8 @@ namespace MonsterTradingCardGame.Data {
             StringBuilder sb = new();
             foreach (PropertyInfo property in properties) {
                 if (property.Name != "id") {
-                    sb.Append(property.Name);
+                    Column? column = property.GetCustomAttribute<Column>();
+                    sb.Append(column == null ? property.Name : column.Name);
                     sb.Append(',');
                 }
             }
@@ -66,10 +67,15 @@ namespace MonsterTradingCardGame.Data {
             StringBuilder sb = new();
             foreach (PropertyInfo property in properties) {
                 if (property.Name != "id") {
-                    if (property.PropertyType == typeof(string)) {
+                    if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
                         sb.Append('\'');
                         sb.Append(property.GetValue(entity));
                         sb.Append('\'');
+                    } else if (property.PropertyType.IsEnum) {
+                        object? enumValue = property.GetValue(entity);
+                        if (enumValue != null) {
+                            sb.Append((int) enumValue);
+                        }
                     } else {
                         sb.Append(property.GetValue(entity));
                     }
@@ -97,10 +103,15 @@ namespace MonsterTradingCardGame.Data {
                     sb.Append(property.Name);
                     sb.Append(" = ");
 
-                    if (property.PropertyType == typeof(string)) {
+                    if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
                         sb.Append('\'');
                         sb.Append(property.GetValue(entity));
                         sb.Append('\'');
+                    } else if (property.PropertyType == typeof(Enum)) {
+                        object? enumValue = property.GetValue(entity);
+                        if (enumValue != null) {
+                            sb.Append((int) enumValue);
+                        }
                     } else {
                         sb.Append(property.GetValue(entity));
                     }

@@ -1,7 +1,7 @@
 namespace MonsterTradingCardGame.Data.Cards {
 
     internal enum CardType {
-        Monster,
-        Spell
+        Monster = 0,
+        Spell = 1
     }
 }

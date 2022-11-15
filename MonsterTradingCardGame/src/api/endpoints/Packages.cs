@@ -1,5 +1,4 @@
 using MonsterTradingCardGame.Data.Cards;
-using MonsterTradingCardGame.Data.Packages;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Api.Endpoints {
@@ -9,7 +8,6 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         private static readonly Logger<Packages> _logger = new();
 
-        private static readonly PackageRepository _packageRepository = new();
         private static readonly CardRepository _cardRepository = new();
 
         // /////////////////////////////////////////////////////////////////////
@@ -23,13 +21,9 @@ namespace MonsterTradingCardGame.Api.Endpoints {
                 return new Response(HttpCode.BAD_REQUEST_400, "{message: \"card already has an id\"}");
             }
 
-            Package? package = _packageRepository.Save(new Package());
-            if (package == null) {
-                return new Response(HttpCode.INTERNAL_SERVER_ERROR_500, "{message: \"could not create package\"}");
-            }
-
+            Guid packageId = Guid.NewGuid();
             foreach (Card card in cards) {
-                card.PackageId = package.id;
+                card.PackageId = packageId;
                 Card? savedCard = _cardRepository.Save(card);
                 if (savedCard == null) {
                     return new Response(HttpCode.INTERNAL_SERVER_ERROR_500, "{message: \"could not create card\"}");

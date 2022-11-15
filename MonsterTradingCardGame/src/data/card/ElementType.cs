@@ -1,8 +1,8 @@
 namespace MonsterTradingCardGame.Data.Cards {
 
     internal enum ElementType {
-        Fire,
-        Water,
-        Normal
+        Fire = 0,
+        Water = 1,
+        Normal = 2
     }
 }
