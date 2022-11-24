@@ -6,6 +6,7 @@ namespace MonsterTradingCardGame.Data.Player {
 
         public string Username { get; private set; }
         public string Password { get; private set; }
+        public int Money { get; set; }
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor

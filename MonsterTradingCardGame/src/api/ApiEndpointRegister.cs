@@ -36,7 +36,7 @@ namespace MonsterTradingCardGame.Api {
         // /////////////////////////////////////////////////////////////////////
 
         public Response Execute(HttpRequest httpRequest) {
-            Destination destination = httpRequest.destination;
+            Destination destination = httpRequest.Destination;
 
             if (endpointTable.ContainsKey(destination)) {
                 MethodInfo methodInfo = endpointTable[destination];
@@ -58,12 +58,21 @@ namespace MonsterTradingCardGame.Api {
         }
 
         private static object? ParseParameter(ParameterInfo parameterInfo, HttpRequest httpRequest) {
-            var attributes = parameterInfo.GetCustomAttributesData();
-            if (attributes.Any(cad => cad.AttributeType == typeof(Body))) {
-                return new JsonSerializer().Deserialize(httpRequest.data, parameterInfo.ParameterType);
-            } else if (attributes.Any(cad => cad.AttributeType == typeof(Header))) {
-                // TODO: return value of header key from request
-                return null;
+            Body? bodyAttribute = parameterInfo.GetCustomAttribute<Body>();
+            Header? headerAttribute = parameterInfo.GetCustomAttribute<Header>();
+
+            if (bodyAttribute != null) {
+                return new JsonSerializer().Deserialize(httpRequest.Data, parameterInfo.ParameterType);
+            } else if (headerAttribute != null) {
+                var headers = httpRequest.Headers;
+                if (headers.ContainsKey(headerAttribute.Name)) {
+                    return headers[headerAttribute.Name];
+                }
+
+                // TODO: maybe throw a different error, also needs to be caught
+                //       maybe not throw exception but return null and have invoked
+                //       method handle it
+                throw new MissingFieldException($"Header '{headerAttribute.Name}' is missing");
             }
             // TODO: implement query parameters
             return null;

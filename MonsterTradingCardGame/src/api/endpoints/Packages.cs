@@ -34,9 +34,11 @@ namespace MonsterTradingCardGame.Api.Endpoints {
             return new Response(HttpCode.CREATED_201, cards);
         }
 
+        // TODO: needs to return response
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/transactions" + URL)]
-        public static void BuyPackages() {
-            // TODO: Geld des Users prüfen, dann random Package kaufen
+        public static void BuyPackages([Header(Name = "Authorization")] string token) {
+            Console.WriteLine(token);
+            // TODO: check token
         }
     }
 }

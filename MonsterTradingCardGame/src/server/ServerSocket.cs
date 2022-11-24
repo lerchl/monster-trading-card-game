@@ -54,7 +54,7 @@ namespace MonsterTradingCardGame.Server {
 
             string text = Encoding.ASCII.GetString(buffer, 0, length);
             HttpRequest request = ParseRequest(text);
-            _logger.Info($"Received {request.destination.method} request for {request.destination.endpoint} from {endPoint}");
+            _logger.Info($"Received {request.Destination.method} request for {request.Destination.endpoint} from {endPoint}");
 
             Response response;
             try {
@@ -72,9 +72,17 @@ namespace MonsterTradingCardGame.Server {
         }
 
         private static HttpRequest ParseRequest(string text) {
-            string requestPattern = @"^(?'httpMethod'\w+) (?'endpoint'/\w*)";
+            string requestPattern = @"^(?'httpMethod'\w+) (?'endpoint'(/\w*)+)";
             Regex requestRegex = new(requestPattern);
             Match requestMatch = requestRegex.Match(text);
+
+            string headerPattern = @"^(?'header'\S+): (?'value'.+)$";
+            Regex headerRegex = new(headerPattern, RegexOptions.Multiline);
+            MatchCollection headerMatches = headerRegex.Matches(text);
+            Dictionary<string, string> headers = new();
+            foreach (Match headerMatch in headerMatches.Cast<Match>()) {
+                headers.Add(headerMatch.Groups["header"].Value, headerMatch.Groups["value"].Value);
+            }
 
             string dataPattern = @"(\[?\{.*\}\]?)";
             Regex dataRegex = new(dataPattern);
@@ -83,7 +91,7 @@ namespace MonsterTradingCardGame.Server {
             string httpMethod = requestMatch.Groups["httpMethod"].Value;
             _ = Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod);
             string apiEndpoint = requestMatch.Groups["endpoint"].Value;
-            return new HttpRequest(new(eHttpMethod, apiEndpoint), new JsonTextReader(new StringReader(dataMatch.Value)));
+            return new HttpRequest(new(eHttpMethod, apiEndpoint), headers, new JsonTextReader(new StringReader(dataMatch.Value)));
         }
 
         private static void SendResponse(Socket client, Response response) {

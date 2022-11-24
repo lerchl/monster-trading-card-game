@@ -1,7 +1,8 @@
 CREATE TABLE PLAYER (
     ID       UUID   PRIMARY KEY DEFAULT gen_random_uuid(),
     USERNAME TEXT   UNIQUE      NOT NULL,
-    PASSWORD TEXT               NOT NULL
+    PASSWORD TEXT               NOT NULL,
+    MONEY    INT                NOT NULL
 );
 
 CREATE TABLE CARD (
