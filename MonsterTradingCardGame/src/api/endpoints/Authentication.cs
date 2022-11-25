@@ -28,8 +28,8 @@ namespace Api.Endpoints {
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else {
                 _logger.Info($"User {username} has logged in");
-                // TODO: send bearer token
-                return new Response(HttpCode.OK_200);
+                Token token = SessionHandler.Instance.CreateSession(username);
+                return new Response(HttpCode.OK_200, token);
             }
         }
 

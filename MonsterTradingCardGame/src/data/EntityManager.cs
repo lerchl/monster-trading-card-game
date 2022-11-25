@@ -14,9 +14,7 @@ namespace MonsterTradingCardGame.Data {
 
         public static EntityManager Instance {
             get {
-                if (_instance == null) {
-                    _instance = new EntityManager();
-                }
+                _instance ??= new EntityManager();
                 return _instance;
             }
         }

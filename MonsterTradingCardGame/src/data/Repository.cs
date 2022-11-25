@@ -12,6 +12,9 @@ namespace MonsterTradingCardGame.Data {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
+        /// <summary>
+        ///     Saves the given entity.
+        /// </summary>
         public T? Save(T entity) {
             if (entity.IsPersisted()) {
                 return Update(entity);
@@ -20,11 +23,33 @@ namespace MonsterTradingCardGame.Data {
             }
         }
 
+        /// <summary>
+        ///     Find entity by its id.
+        /// </summary>
         public T? FindById(string id) {
             string query = $"SELECT * FROM {typeof(T).Name} WHERE id = '{id}';";
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
             return ConstructEntity(result);
         }
+
+        /// <summary>
+        ///     Find all entities.
+        /// </summary>
+        public List<T> FindAll() {
+            string query = $"SELECT * FROM {typeof(T).Name};";
+            var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
+
+            List<T> entities = new();
+            T? entity;
+            while ((entity = ConstructEntity(result)) != null) {
+                entities.Add(entity);
+            }
+
+            return entities;
+        }
+
+        // Helper
+        // /////////////////////////////////////////////////////////////////////
 
         protected static T? ConstructEntity(NpgsqlDataReader result) {
             if (!result.Read()) {
