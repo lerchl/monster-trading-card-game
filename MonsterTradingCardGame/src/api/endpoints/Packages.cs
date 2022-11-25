@@ -20,7 +20,13 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = URL)]
-        public static Response CreatePackage([Body] Card[] cards) {
+        public static Response CreatePackage([Header(Name = "Authorization")] string bearer, [Body] Card[] cards) {
+            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
+            if (token == null) {
+                _logger.Info("Player tried creating a package without being logged in");
+                return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
+            }
+
             if (cards.Any(card => card.IsPersisted())) {
                 return new Response(HttpCode.BAD_REQUEST_400, "{message: \"card already has an id\"}");
             }
@@ -40,32 +46,34 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/transactions" + URL)]
         public static Response BuyPackages([Header(Name = "Authorization")] string bearer) {
-            // TODO: logs
             Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
             if (token == null) {
-                _logger.Info("User tried to buy packages without being logged in");
+                _logger.Info("Player tried to buy packages without being logged in");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
             }
 
             Player? player = _playerRepository.FindByUsername(token.Username);
+            _logger.Info($"Player {player?.Username} is buying a package...");
 
-            if (player.Money < 5) {
+            if (player?.Money < 5) {
+                _logger.Info($"Player {player?.Username} tried to buy a package but did not have enough money");
                 return new Response(HttpCode.BAD_REQUEST_400, "{message: \"not enough money\"}");
             }
 
             List<Guid> packages = _packageRepository.FindAll();
 
             if (packages.Count == 0) {
+                _logger.Info($"Player {player?.Username} tried to buy a package but there are no packages left");
                 return new Response(HttpCode.BAD_REQUEST_400, "{message: \"no packages available\"}");
             }
 
             Guid package = packages[new Random().Next(packages.Count)];
             // TODO: id cannot be null, tell c# to please recognize that
-            List<Card> pulledCards = _cardRepository.PullCards(package, (Guid) player.id);
+            List<Card?> pulledCards = _cardRepository.PullCards(package, (Guid) player?.id);
 
             player.Money -= 5;
             _playerRepository.Save(player);
-            _logger.Info("User successfully bought a package");
+            _logger.Info($"Player {player?.Username} successfully bought a package");
             return new Response(HttpCode.OK_200, pulledCards);
         }
     }
