@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MonsterTradingCardGame.Server {
 
     internal class Token {
@@ -6,6 +8,7 @@ namespace MonsterTradingCardGame.Server {
         // Properties
         // /////////////////////////////////////////////////////////////////////
 
+        public Guid PlayerId { get; private set; }
         public string Username { get; private set; }
         public string Bearer { get; private set; }
         public DateTime ExpiryDate { get; private set; }
@@ -14,9 +17,10 @@ namespace MonsterTradingCardGame.Server {
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Token(string username) {
+        public Token(Guid playerId, string username) {
+            PlayerId = playerId;
             Username = username;
-            Bearer = new Guid().ToString();
+            Bearer = Guid.NewGuid().ToString();
             // Token expires after 30 minutes
             ExpiryDate = DateTime.Now.AddMinutes(30);
         }

@@ -26,9 +26,14 @@ namespace MonsterTradingCardGame.Data {
         /// <summary>
         ///     Find entity by its id.
         /// </summary>
-        public T? FindById(string id) {
-            string query = $"SELECT * FROM {typeof(T).Name} WHERE id = '{id}';";
-            var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
+        public T? FindById(Guid id) {
+            string query = $"SELECT * FROM {typeof(T).Name} WHERE id = (id)";
+            var command = new NpgsqlCommand(query, _entityManager.connection) {
+                Parameters = {
+                    new("id", id)
+                }
+            };
+            var result = command.ExecuteReader();
             return ConstructEntity(result);
         }
 
@@ -66,14 +71,25 @@ namespace MonsterTradingCardGame.Data {
             return typeof(T).GetConstructors()[0].Invoke(values) as T;
         }
 
+        protected static List<T> ConstructEntityList(NpgsqlDataReader result) {
+            List<T> entities = new();
+            T? entity;
+
+            while ((entity = ConstructEntity(result)) != null) {
+                entities.Add(entity);
+            }
+
+            return entities;
+        }
+
         // Save
         // /////////////////////////////////////////////////////////////////////
 
         private T? Insert(T entity) {
             PropertyInfo[] properties = typeof(T).GetProperties();
             string query = $"INSERT INTO {typeof(T).Name} ({PropertiesToString(properties)}) VALUES ({ValuesOfPropertiesToString(properties, entity)}) RETURNING id;";
-            var uuid = new NpgsqlCommand(query, _entityManager.connection).ExecuteScalar();
-            return FindById(uuid.ToString());
+            Guid id = (Guid) new NpgsqlCommand(query, _entityManager.connection).ExecuteScalar();
+            return FindById(id);
         }
 
         private static string PropertiesToString(PropertyInfo[] properties) {
@@ -114,11 +130,11 @@ namespace MonsterTradingCardGame.Data {
             PropertyInfo[] properties = typeof(T).GetProperties();
 
             string query = $"UPDATE {typeof(T).Name} SET {FieldAndValuePairsToString(properties, entity)} WHERE id = :id RETURNING id;";
-            var result = new NpgsqlCommand(query, _entityManager.connection) {
+            Guid id = (Guid) new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = { new(":id", entity.id) }
             }.ExecuteScalar();
 
-            return FindById(result.ToString());
+            return FindById(id);
         }
 
         private static string FieldAndValuePairsToString(PropertyInfo[] properties, T entity) {

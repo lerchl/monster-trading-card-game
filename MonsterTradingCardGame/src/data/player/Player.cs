@@ -13,9 +13,10 @@ namespace MonsterTradingCardGame.Data.Player {
         // /////////////////////////////////////////////////////////////////////
 
         [JsonConstructor]
-        public Player(Guid id, string username, string password) : base(id) {
+        public Player(Guid id, string username, string password, int money) : base(id) {
             Username = username;
             Password = password;
+            Money = money;
         }
     }
 }

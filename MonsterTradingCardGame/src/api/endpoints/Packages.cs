@@ -52,7 +52,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
             }
 
-            Player? player = _playerRepository.FindByUsername(token.Username);
+            Player? player = _playerRepository.FindById(token.PlayerId);
             _logger.Info($"Player {player?.Username} is buying a package...");
 
             if (player?.Money < 5) {

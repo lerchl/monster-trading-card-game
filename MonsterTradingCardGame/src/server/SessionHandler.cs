@@ -36,8 +36,8 @@ namespace MonsterTradingCardGame.Server {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public Token CreateSession(string username) {
-            Token token = new(username);
+        public Token CreateSession(Guid playerId, string username) {
+            Token token = new(playerId, username);
             Sessions.Add(token.Bearer, token);
             _logger.Info($"Created session for user {username}");
             return token;

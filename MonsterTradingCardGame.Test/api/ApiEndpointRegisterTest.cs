@@ -12,7 +12,7 @@ namespace MonsterTradingCardGame.Test {
             ApiEndpointRegister register = new(typeof(DummyApiEndpoint));
 
             // Act
-            Response res = register.Execute(new HttpRequest(new Destination(EHttpMethod.GET, "/dummy"), null));
+            Response res = register.Execute(new HttpRequest(new Destination(EHttpMethod.GET, "/dummy"), null, null));
 
             // Assert
             Assert.AreEqual(HttpCode.OK_200, res.HttpCode);

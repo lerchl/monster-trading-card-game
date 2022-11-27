@@ -81,7 +81,9 @@ namespace MonsterTradingCardGame.Server {
             MatchCollection headerMatches = headerRegex.Matches(text);
             Dictionary<string, string> headers = new();
             foreach (Match headerMatch in headerMatches.Cast<Match>()) {
-                headers.Add(headerMatch.Groups["header"].Value, headerMatch.Groups["value"].Value);
+                string header = headerMatch.Groups["header"].Value;
+                string value = Regex.Replace(headerMatch.Groups["value"].Value, @"\n|\r", "");
+                headers.Add(header, value);
             }
 
             string dataPattern = @"(\[?\{.*\}\]?)";
