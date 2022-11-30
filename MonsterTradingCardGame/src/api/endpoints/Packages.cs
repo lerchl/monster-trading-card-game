@@ -34,6 +34,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
             Guid packageId = Guid.NewGuid();
             foreach (Card card in cards) {
                 card.PackageId = packageId;
+                card.PlayerId = null;
                 Card? savedCard = _cardRepository.Save(card);
                 if (savedCard == null) {
                     return new Response(HttpCode.INTERNAL_SERVER_ERROR_500, "{message: \"could not create card\"}");

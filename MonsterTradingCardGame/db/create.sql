@@ -7,7 +7,7 @@ CREATE TABLE PLAYER (
 
 CREATE TABLE CARD (
     ID           UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
-    NAME         TEXT    UNIQUE      NOT NULL,
+    NAME         TEXT                NOT NULL,
     ELEMENT_TYPE INTEGER             NOT NULL,
     DAMAGE       DECIMAL             NOT NULL,
     CARD_TYPE    INTEGER             NOT NULL,

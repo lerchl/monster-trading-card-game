@@ -12,7 +12,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         private static readonly CardRepository _cardRepository = new();
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response FindAllByUser([Header(Name = "Authorization")] string bearer) {
+        public static Response FindAllCardsByPlayer([Header(Name = "Authorization")] string bearer) {
             Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
             if (token == null) {
                 _logger.Info("Player tried to get all cards without being logged in");

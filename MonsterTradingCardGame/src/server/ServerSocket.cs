@@ -13,7 +13,9 @@ namespace MonsterTradingCardGame.Server {
 
         private static readonly Logger<ServerSocket> _logger = new();
 
-        private readonly ApiEndpointRegister _endpointRegister = new(typeof(Authentication), typeof(Packages));
+        private readonly ApiEndpointRegister _endpointRegister = new(typeof(Authentication),
+                                                                     typeof(Cards),
+                                                                     typeof(Packages));
         private readonly Socket _serverSocket;
         private bool wait = false;
 

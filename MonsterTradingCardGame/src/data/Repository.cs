@@ -43,30 +43,27 @@ namespace MonsterTradingCardGame.Data {
         public List<T> FindAll() {
             string query = $"SELECT * FROM {typeof(T).Name};";
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
-
-            List<T> entities = new();
-            T? entity;
-            while ((entity = ConstructEntity(result)) != null) {
-                entities.Add(entity);
-            }
-
-            return entities;
+            return ConstructEntityList(result);
         }
 
         // Helper
         // /////////////////////////////////////////////////////////////////////
 
-        protected static T? ConstructEntity(NpgsqlDataReader result) {
+        protected static T? ConstructEntity(NpgsqlDataReader result, bool close = true) {
             if (!result.Read()) {
                 result.Close();
                 return null;
             }
 
-            object[] values = new object[result.FieldCount];
+            object?[] values = new object[result.FieldCount];
             for (int i = 0; i < result.FieldCount; i++) {
-                values[i] = result.GetValue(i);
+                object value = result.GetValue(i);
+                values[i] = value.GetType() == typeof(DBNull) ? null : value;
             }
-            result.Close();
+
+            if (close) {
+                result.Close();
+            }
 
             return typeof(T).GetConstructors()[0].Invoke(values) as T;
         }
@@ -75,10 +72,11 @@ namespace MonsterTradingCardGame.Data {
             List<T> entities = new();
             T? entity;
 
-            while ((entity = ConstructEntity(result)) != null) {
+            while ((entity = ConstructEntity(result, false)) != null) {
                 entities.Add(entity);
             }
 
+            result.Close();
             return entities;
         }
 
@@ -87,7 +85,7 @@ namespace MonsterTradingCardGame.Data {
 
         private T? Insert(T entity) {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            string query = $"INSERT INTO {typeof(T).Name} ({PropertiesToString(properties)}) VALUES ({ValuesOfPropertiesToString(properties, entity)}) RETURNING id;";
+            string query = $"INSERT INTO {typeof(T).Name} ({PropertiesToString(properties)}) VALUES ({ValuesOfPropertiesToString(properties, entity)}) RETURNING ID";
             Guid id = (Guid) new NpgsqlCommand(query, _entityManager.connection).ExecuteScalar();
             return FindById(id);
         }
@@ -108,7 +106,10 @@ namespace MonsterTradingCardGame.Data {
             StringBuilder sb = new();
             foreach (PropertyInfo property in properties) {
                 if (property.Name != "id") {
-                    if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
+                    object? value = property.GetValue(entity);
+                    if (value == null) {
+                        sb.Append("null");
+                    } else if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
                         sb.Append('\'');
                         sb.Append(property.GetValue(entity));
                         sb.Append('\'');
@@ -141,14 +142,18 @@ namespace MonsterTradingCardGame.Data {
             StringBuilder sb = new();
             foreach (PropertyInfo property in properties) {
                 if (property.Name != "id") {
-                    sb.Append(property.Name);
+                    Column? column = property.GetCustomAttribute<Column>();
+                    sb.Append(column == null ? property.Name : column.Name);
                     sb.Append(" = ");
 
-                    if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
+                    object? value = property.GetValue(entity);
+                    if (value == null) {
+                        sb.Append("null");
+                    } else if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
                         sb.Append('\'');
                         sb.Append(property.GetValue(entity));
                         sb.Append('\'');
-                    } else if (property.PropertyType == typeof(Enum)) {
+                    } else if (property.PropertyType.IsEnum) {
                         object? enumValue = property.GetValue(entity);
                         if (enumValue != null) {
                             sb.Append((int) enumValue);
