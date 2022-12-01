@@ -19,7 +19,7 @@ namespace MonsterTradingCardGame.Data.Cards {
         public Guid? PlayerId { get; set; }
 
         // /////////////////////////////////////////////////////////////////////
-        // Constructor
+        // Init
         // /////////////////////////////////////////////////////////////////////
 
         public Card(Guid id, string name, ElementType elementType, decimal damage, CardType cardType, Guid? packageId, Guid? playerId) : base(id) {

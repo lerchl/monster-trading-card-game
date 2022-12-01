@@ -1,5 +1,8 @@
 namespace MonsterTradingCardGame.Server {
 
+    /// <summary
+    ///     Singleton for handling sessions.
+    /// </summary>
     internal class SessionHandler {
 
         private static readonly Logger<SessionHandler> _logger = new();
@@ -10,6 +13,10 @@ namespace MonsterTradingCardGame.Server {
         // Properties
         // /////////////////////////////////////////////////////////////////////
 
+        /// <summary>
+        ///     Singleton instance.
+        ///     This is how you want to access the SessionHandler.
+        /// </summary>
         public static SessionHandler Instance {
             get {
                 _instance ??= new SessionHandler();
@@ -25,7 +32,7 @@ namespace MonsterTradingCardGame.Server {
         public Dictionary<string, Token> Sessions { get; private set; }
 
         // /////////////////////////////////////////////////////////////////////
-        // Constructor
+        // Init
         // /////////////////////////////////////////////////////////////////////
 
         private SessionHandler() {
@@ -36,6 +43,12 @@ namespace MonsterTradingCardGame.Server {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
+        /// <summary>
+        ///     Creates a new session for a player
+        /// </summary>
+        /// <param name="playerId">The id of the player</param>
+        /// <param name="username">The username of the player</param>
+        /// <returns>The token linked to the session</returns>
         public Token CreateSession(Guid playerId, string username) {
             Token token = new(playerId, username);
             Sessions.Add(token.Bearer, token);
@@ -43,15 +56,22 @@ namespace MonsterTradingCardGame.Server {
             return token;
         }
 
+        /// <summary>
+        ///     Gets the token for a bearer.
+        /// </summary>
+        /// <param name="bearer">The bearer</param>
+        /// <returns>
+        ///     The token, if it exists and has not expired, null otherwise.
+        /// </returns>
         public Token? GetSession(string bearer) {
             if (Sessions.ContainsKey(bearer)) {
                 Token token = Sessions[bearer];
                 if (token.ExpiryDate > DateTime.Now) {
                     return token;
-                } else {
-                    Sessions.Remove(bearer);
-                    _logger.Info($"Session for user {token.Username} has expired");
                 }
+
+                Sessions.Remove(bearer);
+                _logger.Info($"Session for user {token.Username} has expired");
             }
 
             return null;

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace MonsterTradingCardGame.Server {
 
     internal class Token {
@@ -14,13 +12,15 @@ namespace MonsterTradingCardGame.Server {
         public DateTime ExpiryDate { get; private set; }
 
         // /////////////////////////////////////////////////////////////////////
-        // Constructor
+        // Init
         // /////////////////////////////////////////////////////////////////////
 
         public Token(Guid playerId, string username) {
             PlayerId = playerId;
             Username = username;
-            Bearer = Guid.NewGuid().ToString();
+            // Bearer just consists of username and "-mtcgToken" appended.
+            // This is not a secure way of generating a bearer token.
+            Bearer = username + "-mtcgToken";
             // Token expires after 30 minutes
             ExpiryDate = DateTime.Now.AddMinutes(30);
         }
