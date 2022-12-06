@@ -12,7 +12,7 @@ namespace MonsterTradingCardGame.Data {
             // default constructor
         }
 
-        public Entity(Guid id) {
+        public Entity(Guid? id) {
             this.id = id;
         }
 

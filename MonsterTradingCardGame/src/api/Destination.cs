@@ -18,6 +18,10 @@ namespace MonsterTradingCardGame.Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
+        public override string ToString() {
+            return $"{method}-Request to {endpoint}";
+        }
+
         public override bool Equals(object obj) {
             if (obj == null || GetType() != obj.GetType()) {
                 return false;
@@ -29,7 +33,7 @@ namespace MonsterTradingCardGame.Api {
         }
 
         public override int GetHashCode() {
-            return (method.GetHashCode() * endpoint.GetHashCode()) % int.MaxValue;
+            return method.GetHashCode() * endpoint.GetHashCode() % int.MaxValue;
         }
     }
 }

@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace MonsterTradingCardGame.Data.Deck {
 
     internal class Deck : Entity {
@@ -21,12 +23,16 @@ namespace MonsterTradingCardGame.Data.Deck {
         // Init
         // /////////////////////////////////////////////////////////////////////
 
-        public Deck(Guid id, Guid playerId, Guid card1Id, Guid card2Id, Guid card3Id, Guid card4Id) : base(id) {
+        public Deck(Guid? id, Guid playerId, Guid card1Id, Guid card2Id, Guid card3Id, Guid card4Id) : base(id) {
             PlayerId = playerId;
             Card1Id = card1Id;
             Card2Id = card2Id;
             Card3Id = card3Id;
             Card4Id = card4Id;
+        }
+
+        public Deck(Guid playerId, Guid card1Id, Guid card2Id, Guid card3Id, Guid card4Id) : this(null, playerId, card1Id, card2Id, card3Id, card4Id) {
+            // noop
         }
     }
 }
