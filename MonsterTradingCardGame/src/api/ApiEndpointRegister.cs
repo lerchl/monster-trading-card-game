@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using MonsterTradingCardGame.Server;
 using Newtonsoft.Json;
 
@@ -37,33 +38,43 @@ namespace MonsterTradingCardGame.Api {
 
         public Response Execute(HttpRequest httpRequest) {
             Destination destination = httpRequest.Destination;
+            MethodInfo? methodInfo = endpointTable[destination];
 
-            if (endpointTable.ContainsKey(destination)) {
-                MethodInfo methodInfo = endpointTable[destination];
-                ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                var parameters = parameterInfos.Select((parameterInfo, index) => ParseParameter(parameterInfo, httpRequest)).ToArray();
-                var returnValue = methodInfo.Invoke(null, parameters);
+            // exact match for endpoint could not be found
+            // might be an endpoint with path params
+            if (methodInfo == null) {
+                Destination? genericDestination = endpointTable.Keys.ToList().FirstOrDefault(genericDestination => new Regex(genericDestination.endpoint).IsMatch(destination.endpoint));
 
-                if (returnValue is Response response) {
-                    return response;
+                // generic endpoint could also not be found
+                // endpoint does not exist
+                if (genericDestination == null) {
+                    _logger.Warn($"No endpoint found for {destination}");
+                    throw new NoSuchDestinationException(destination);
                 }
 
-                throw new ProgrammerFailException($"Return value of method '{methodInfo.Name}' " +
-                                                  $"for {destination.method}-Request " +
-                                                  $"to {destination.endpoint} is not of type Response");
-            } else {
-                _logger.Warn($"No endpoint found for {destination}");
-                throw new NoSuchDestinationException(destination);
+                methodInfo = endpointTable[genericDestination];
             }
+
+            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+            var parameters = parameterInfos.Select((parameterInfo, index) => ParseParameter(parameterInfo, httpRequest)).ToArray();
+            var returnValue = methodInfo.Invoke(null, parameters);
+
+            if (returnValue is Response response) {
+                return response;
+            }
+
+            throw new ProgrammerFailException($"Return value of method '{methodInfo.Name}' " +
+                                              $"for {destination.method}-Request " +
+                                              $"to {destination.endpoint} is not of type Response");
         }
 
         private static object? ParseParameter(ParameterInfo parameterInfo, HttpRequest httpRequest) {
-            Body? bodyAttribute = parameterInfo.GetCustomAttribute<Body>();
             Header? headerAttribute = parameterInfo.GetCustomAttribute<Header>();
+            PathParam? pathParamAttribute = parameterInfo.GetCustomAttribute<PathParam>();
+            QueryParam? queryParamAttribute = parameterInfo.GetCustomAttribute<QueryParam>();
+            Body? bodyAttribute = parameterInfo.GetCustomAttribute<Body>();
 
-            if (bodyAttribute != null) {
-                return new JsonSerializer().Deserialize(httpRequest.Data, parameterInfo.ParameterType);
-            } else if (headerAttribute != null) {
+            if (headerAttribute != null) {
                 var headers = httpRequest.Headers;
                 if (headers.ContainsKey(headerAttribute.Name)) {
                     return headers[headerAttribute.Name];
@@ -73,8 +84,14 @@ namespace MonsterTradingCardGame.Api {
                 //       maybe not throw exception but return null and have invoked
                 //       method handle it
                 throw new MissingFieldException($"Header '{headerAttribute.Name}' is missing");
+            } else if (pathParamAttribute != null) {
+                // TODO: path params
+            } else if (queryParamAttribute != null) {
+                // TODO: query params
+            } else if (bodyAttribute != null) {
+                return new JsonSerializer().Deserialize(httpRequest.Data, parameterInfo.ParameterType);
             }
-            // TODO: implement query parameters
+
             return null;
         }
     }
