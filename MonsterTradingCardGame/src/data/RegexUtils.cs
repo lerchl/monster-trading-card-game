@@ -10,6 +10,6 @@ namespace MonsterTradingCardGame.Data {
         /// <summary>
         ///     Regular expression for a valid username.
         /// </summary>
-        public const string Username = @"^[a-zA-Z0-9]{3,30}$";
+        public const string Username = @"[a-zA-Z0-9]{3,30}";
     }
 }

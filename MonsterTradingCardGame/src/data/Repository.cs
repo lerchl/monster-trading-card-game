@@ -27,10 +27,10 @@ namespace MonsterTradingCardGame.Data {
         ///     Find entity by its id.
         /// </summary>
         public T? FindById(Guid id) {
-            string query = $"SELECT * FROM {typeof(T).Name} WHERE id = (id)";
+            string query = $"SELECT * FROM {typeof(T).Name} WHERE id = :id";
             var command = new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = {
-                    new("id", id)
+                    new(":id", id)
                 }
             };
             var result = command.ExecuteReader();

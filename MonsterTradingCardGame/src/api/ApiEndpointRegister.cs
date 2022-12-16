@@ -38,12 +38,14 @@ namespace MonsterTradingCardGame.Api {
 
         public Response Execute(HttpRequest httpRequest) {
             Destination destination = httpRequest.Destination;
-            MethodInfo? methodInfo = endpointTable[destination];
+            MethodInfo? methodInfo;
 
-            // exact match for endpoint could not be found
-            // might be an endpoint with path params
-            if (methodInfo == null) {
-                Destination? genericDestination = endpointTable.Keys.ToList().FirstOrDefault(genericDestination => new Regex(genericDestination.endpoint).IsMatch(destination.endpoint));
+            if (endpointTable.ContainsKey(destination)) {
+                methodInfo = endpointTable[destination];
+            } else {
+                // exact match for endpoint could not be found
+                // might be an endpoint with path params
+                Destination? genericDestination = endpointTable.Keys.ToList().FirstOrDefault(d => GenericDestinationMatches(d, destination));
 
                 // generic endpoint could also not be found
                 // endpoint does not exist
@@ -52,11 +54,12 @@ namespace MonsterTradingCardGame.Api {
                     throw new NoSuchDestinationException(destination);
                 }
 
+                destination = genericDestination;
                 methodInfo = endpointTable[genericDestination];
             }
 
             ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-            var parameters = parameterInfos.Select((parameterInfo, index) => ParseParameter(parameterInfo, httpRequest)).ToArray();
+            var parameters = parameterInfos.Select((parameterInfo, index) => ParseParameter(parameterInfo, httpRequest, destination)).ToArray();
             var returnValue = methodInfo.Invoke(null, parameters);
 
             if (returnValue is Response response) {
@@ -68,7 +71,16 @@ namespace MonsterTradingCardGame.Api {
                                               $"to {destination.endpoint} is not of type Response");
         }
 
-        private static object? ParseParameter(ParameterInfo parameterInfo, HttpRequest httpRequest) {
+        /// <summary
+        ///    Checks if a destination matches a generic destination.
+        /// </summary>
+        /// <param name="genericDestination">The generic destination.</param>
+        /// <param name="destination">The destination.</param>
+        private static bool GenericDestinationMatches(Destination genericDestination, Destination destination) {
+            return genericDestination.method == destination.method && new Regex(genericDestination.endpoint).IsMatch(destination.endpoint);
+        }
+
+        private static object? ParseParameter(ParameterInfo parameterInfo, HttpRequest httpRequest, Destination genericDestination) {
             Header? headerAttribute = parameterInfo.GetCustomAttribute<Header>();
             PathParam? pathParamAttribute = parameterInfo.GetCustomAttribute<PathParam>();
             QueryParam? queryParamAttribute = parameterInfo.GetCustomAttribute<QueryParam>();
@@ -85,7 +97,7 @@ namespace MonsterTradingCardGame.Api {
                 //       method handle it
                 throw new MissingFieldException($"Header '{headerAttribute.Name}' is missing");
             } else if (pathParamAttribute != null) {
-                // TODO: path params
+                return new Regex(genericDestination.endpoint).Match(httpRequest.Destination.endpoint).Groups[pathParamAttribute.Name].Value;
             } else if (queryParamAttribute != null) {
                 // TODO: query params
             } else if (bodyAttribute != null) {

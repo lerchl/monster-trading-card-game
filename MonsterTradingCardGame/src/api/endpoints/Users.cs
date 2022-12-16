@@ -1,12 +1,14 @@
 using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Data.Player;
 using MonsterTradingCardGame.Server;
+using Npgsql;
 
 namespace MonsterTradingCardGame.Api.Endpoints {
 
     internal class Users {
 
-        private const string URL = "/users/" + RegexUtils.Username;
+        private const string USERNAME_PATH_PARAM = "Username";
+        private const string URL = $"/users/(?'{USERNAME_PATH_PARAM}'{RegexUtils.Username})";
 
         private static readonly Logger<Users> _logger = new();
         private static readonly PlayerRepository _playerRepository = new();
@@ -16,8 +18,8 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         // /////////////////////////////////////////////////////////////////////
     
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response FindByUsername([Header(Name = "Authorization")] string bearer,
-                                              [PathParam(Name = "Username")]   string username) {
+        public static Response FindByUsername([Header(Name = "Authorization")]          string bearer,
+                                              [PathParam(Name = USERNAME_PATH_PARAM)]   string username) {
             // TODO: abstract authorization because of code duplication
             Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
             if (token == null) {
@@ -30,9 +32,9 @@ namespace MonsterTradingCardGame.Api.Endpoints {
                 return new(HttpCode.FORBIDDEN_403, "{message: \"not allowed\"}");
             }
 
-            Player? player = _playerRepository.FindById(token.PlayerId);
+            Player? dbPlayer = _playerRepository.FindById(token.PlayerId);
 
-            if (player == null) {
+            if (dbPlayer == null) {
                 // this can theoretically never happen because
                 // the token is only valid if the player exists
                 // and accessing another player's data is forbidden
@@ -40,14 +42,14 @@ namespace MonsterTradingCardGame.Api.Endpoints {
                 return new(HttpCode.NOT_FOUND_404, "{message: \"player not found\"}");
             }
 
-            // TODO: maybe remove password before sending back data
-            return new(HttpCode.OK_200, player);
+            dbPlayer.Password = "*redacted*";
+            return new(HttpCode.OK_200, dbPlayer);
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
-        public static Response EditByUsername([Header(Name = "Authorization")] string bearer,
-                                              [PathParam(Name = "Username")]   string username,
-                                              [Body]                           Player player) {
+        public static Response EditByUsername([Header(Name = "Authorization")]          string bearer,
+                                              [PathParam(Name = USERNAME_PATH_PARAM)]   string username,
+                                              [Body]                                    Player player) {
             // TODO: abstract authorization because of code duplication
             Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
             if (token == null) {
@@ -76,7 +78,12 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
             dbPlayer = _playerRepository.Save(dbPlayer);
 
-            // TODO: maybe remove password before sending back data
+            if (dbPlayer == null) {
+                _logger.Error($"Player {username} could not be saved");
+                return new(HttpCode.INTERNAL_SERVER_ERROR_500, "{message: \"could not save player\"}");
+            }
+
+            dbPlayer.Password = "*redacted*";
             return new(HttpCode.OK_200, dbPlayer);
         }
     }
