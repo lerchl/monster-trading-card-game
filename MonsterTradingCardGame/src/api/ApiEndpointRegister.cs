@@ -97,6 +97,7 @@ namespace MonsterTradingCardGame.Api {
                 //       method handle it
                 throw new MissingFieldException($"Header '{headerAttribute.Name}' is missing");
             } else if (pathParamAttribute != null) {
+                // TODO: pathParamAttribute.Name could be null or not an actual group in the regex
                 return new Regex(genericDestination.endpoint).Match(httpRequest.Destination.endpoint).Groups[pathParamAttribute.Name].Value;
             } else if (queryParamAttribute != null) {
                 // TODO: query params

@@ -1,14 +1,13 @@
 using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Data.Player;
 using MonsterTradingCardGame.Server;
-using Npgsql;
 
 namespace MonsterTradingCardGame.Api.Endpoints {
 
     internal class Users {
 
-        private const string USERNAME_PATH_PARAM = "Username";
-        private const string URL = $"/users/(?'{USERNAME_PATH_PARAM}'{RegexUtils.Username})";
+        private const string USERNAME_PATH_PARAM = "username";
+        private const string URL = $"^/users/(?'{USERNAME_PATH_PARAM}'{RegexUtils.Username})$";
 
         private static readonly Logger<Users> _logger = new();
         private static readonly PlayerRepository _playerRepository = new();
