@@ -15,6 +15,8 @@ namespace MonsterTradingCardGame.Data {
         /// <summary>
         ///     Saves the given entity.
         /// </summary>
+        /// <param name="entity">The entity</param>
+        /// <returns>The saved entity</returns>
         public T? Save(T entity) {
             if (entity.IsPersisted()) {
                 return Update(entity);
@@ -26,6 +28,8 @@ namespace MonsterTradingCardGame.Data {
         /// <summary>
         ///     Find entity by its id.
         /// </summary>
+        /// <param name="id">Id of the entity</param>
+        /// <returns>The entity</returns>
         public T? FindById(Guid id) {
             string query = $"SELECT * FROM {typeof(T).Name} WHERE id = :id";
             var command = new NpgsqlCommand(query, _entityManager.connection) {
@@ -40,10 +44,25 @@ namespace MonsterTradingCardGame.Data {
         /// <summary>
         ///     Find all entities.
         /// </summary>
+        /// <returns>List of entities</returns>
         public List<T> FindAll() {
             string query = $"SELECT * FROM {typeof(T).Name};";
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
             return ConstructEntityList(result);
+        }
+
+        /// <summary>
+        ///     Delete entity.
+        /// </summary>
+        /// <param name="id">Id of the entity</param>
+        public void Delete(Guid id) {
+            string query = $"DELETE FROM {typeof(T).Name} WHERE id = :id";
+            var command = new NpgsqlCommand(query, _entityManager.connection) {
+                Parameters = {
+                    new(":id", id)
+                }
+            };
+            command.ExecuteNonQuery();
         }
 
         // Helper

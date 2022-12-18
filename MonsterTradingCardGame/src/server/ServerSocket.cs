@@ -17,6 +17,7 @@ namespace MonsterTradingCardGame.Server {
                                                                      typeof(Cards),
                                                                      typeof(Packages),
                                                                      typeof(Decks),
+                                                                     typeof(Trades),
                                                                      typeof(Users));
         private readonly Socket _serverSocket;
         private bool wait = false;

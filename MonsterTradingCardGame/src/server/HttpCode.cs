@@ -7,6 +7,7 @@ namespace MonsterTradingCardGame.Server {
 
         public static readonly HttpCode OK_200 = new(200, "OK");
         public static readonly HttpCode CREATED_201 = new(201, "Created");
+        public static readonly HttpCode NO_CONTENT_204 = new(204, "No Content");
 
         public static readonly HttpCode BAD_REQUEST_400 = new(400, "Bad Request");
         public static readonly HttpCode UNAUTHORIZED_401 = new(401, "Unauthorized");

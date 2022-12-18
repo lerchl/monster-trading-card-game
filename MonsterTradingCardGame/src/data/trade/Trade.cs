@@ -5,7 +5,7 @@ namespace MonsterTradingCardGame.Data.Trade {
     internal class Trade : Entity {
 
         [Column(Name = "PLAYER_ID")]
-        public Guid PlayerId { get; private set; }
+        public Guid PlayerId { get; set; }
 
         [Column(Name = "CARD_ID")]
         public Guid CardId { get; private set; }

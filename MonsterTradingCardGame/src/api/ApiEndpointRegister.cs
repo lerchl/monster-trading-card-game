@@ -144,7 +144,7 @@ namespace MonsterTradingCardGame.Api {
         /// <param name="headers">The http request's headers</param>
         /// <returns>The <see cref="Token"/> if the request is authorized, <see langword="null"/> otherwise.</returns>
         private static Token? CheckAuthorization(Dictionary<string, string> headers) {
-            // request does not contain bearer token => request is unauthorized
+            // request does not contain bearer token, is is therefore unauthorized
             if (!headers.ContainsKey("Authorization")) {
                 return null;
             }
