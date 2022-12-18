@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame.Data.Player {
 
-    internal class Player : Entity {
+    public class Player : Entity {
 
         public string Username { get; private set; }
         public string Password { get; set; }

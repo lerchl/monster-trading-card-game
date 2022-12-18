@@ -15,7 +15,7 @@ namespace Api.Endpoints {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/sessions$")]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/sessions$", RequiresAuthentication = false)]
         public static Response Login([Body] Player player) {
             string username = player.Username;
             Player? dbPlayer = _playerRepository.FindByUsername(username);
@@ -33,7 +33,7 @@ namespace Api.Endpoints {
             }
         }
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/users$")]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/users$", RequiresAuthentication = false)]
         public static Response Register([Body] Player player) {
             string username = player.Username;
             Player? dbPlayer = _playerRepository.FindByUsername(username);

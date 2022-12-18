@@ -1,12 +1,15 @@
+using MonsterTradingCardGame.Api;
+
 namespace MonsterTradingCardGame.Server {
 
     /// <summary
     ///     Singleton for handling sessions.
     /// </summary>
-    internal class SessionHandler {
+    public class SessionHandler {
+
+        public static readonly Response UNAUTHORIZED_RESPONSE = new(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
 
         private static readonly Logger<SessionHandler> _logger = new();
-
         private static SessionHandler? _instance;
 
         // /////////////////////////////////////////////////////////////////////
@@ -60,10 +63,14 @@ namespace MonsterTradingCardGame.Server {
         ///     Gets the token for a bearer.
         /// </summary>
         /// <param name="bearer">The bearer</param>
-        /// <returns>
-        ///     The token, if it exists and has not expired, null otherwise.
-        /// </returns>
+        /// <returns>The token, if it exists and has not expired, null otherwise.</returns>
         public Token? GetSession(string bearer) {
+            string[] bearerParts = bearer.Split(' ');
+            if (bearerParts.Length != 2 || bearerParts[0] != "Bearer") {
+                return null;
+            }
+
+            bearer = bearerParts[1];
             if (Sessions.ContainsKey(bearer)) {
                 Token token = Sessions[bearer];
                 if (token.ExpiryDate > DateTime.Now) {

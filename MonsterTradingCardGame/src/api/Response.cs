@@ -1,5 +1,4 @@
 using System.Text.Json;
-using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Api {

@@ -17,64 +17,35 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         // /////////////////////////////////////////////////////////////////////
     
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response FindByUsername([Header(Name = "Authorization")]          string bearer,
-                                              [PathParam(Name = USERNAME_PATH_PARAM)]   string username) {
-            // TODO: abstract authorization because of code duplication
-            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
-            if (token == null) {
-                _logger.Info("Unauthorized request to authorized-only endpoint");
-                return new(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
-            }
-
-            if (!token.Username.Equals(username)) {
+        public static Response FindByUsername([Bearer]                                Token bearer,
+                                              [PathParam(Name = USERNAME_PATH_PARAM)] string username) {
+            if (!bearer.Username.Equals(username)) {
                 _logger.Info("Player tried to get another player's data");
                 return new(HttpCode.FORBIDDEN_403, "{message: \"not allowed\"}");
             }
 
-            Player? dbPlayer = _playerRepository.FindById(token.PlayerId);
-
-            if (dbPlayer == null) {
-                // this can theoretically never happen because
-                // the token is only valid if the player exists
-                // and accessing another player's data is forbidden
-                _logger.Error($"Player {username} not found");
-                return new(HttpCode.NOT_FOUND_404, "{message: \"player not found\"}");
-            }
-
+            Player dbPlayer = _playerRepository.FindById(bearer.PlayerId)!;
             dbPlayer.Password = "*redacted*";
             return new(HttpCode.OK_200, dbPlayer);
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
-        public static Response EditByUsername([Header(Name = "Authorization")]          string bearer,
-                                              [PathParam(Name = USERNAME_PATH_PARAM)]   string username,
-                                              [Body]                                    Player player) {
-            // TODO: abstract authorization because of code duplication
-            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
-            if (token == null) {
-                _logger.Info("Unauthorized request to authorized-only endpoint");
-                return new(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
-            }
-
-            if (!token.Username.Equals(username)) {
+        public static Response EditByUsername([Bearer]                                Token bearer,
+                                              [PathParam(Name = USERNAME_PATH_PARAM)] string username,
+                                              [Body]                                  Player player) {
+            if (!bearer.Username.Equals(username)) {
                 _logger.Info("Player tried to edit another player's data");
                 return new(HttpCode.FORBIDDEN_403, "{message: \"not allowed\"}");
             }
 
-            Player? dbPlayer = _playerRepository.FindById(token.PlayerId);
-
-            if (dbPlayer == null) {
-                // this can theoretically never happen because
-                // the token is only valid if the player exists
-                // and accessing another player's data is forbidden
-                _logger.Error($"Player {username} not found");
-                return new(HttpCode.NOT_FOUND_404, "{message: \"player not found\"}");
-            }
-
+            Player dbPlayer = _playerRepository.FindById(bearer.PlayerId)!;
             dbPlayer.Name = player.Name;
             dbPlayer.Bio = player.Bio;
             dbPlayer.Image = player.Image;
 
+            // TODO: this is kinda weird,
+            // the repository should always return the updated object if the save was succesful
+            // so there should be an exception rather than a possibility for null
             dbPlayer = _playerRepository.Save(dbPlayer);
 
             if (dbPlayer == null) {

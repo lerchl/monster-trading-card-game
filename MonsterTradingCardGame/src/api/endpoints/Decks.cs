@@ -1,4 +1,3 @@
-using System.Net.Http;
 using MonsterTradingCardGame.Data.Deck;
 using MonsterTradingCardGame.Server;
 
@@ -8,8 +7,6 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         private const string URL = "/decks";
 
-        private static readonly Logger<Decks> _logger = new();
-
         private static readonly DeckRepository _deckRepository = new();
 
         // /////////////////////////////////////////////////////////////////////
@@ -17,13 +14,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         // /////////////////////////////////////////////////////////////////////
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response GetDeck([Header(Name = "Authorization")] string bearer) {
-            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
-            if (token == null) {
-                _logger.Info("Player tried to get deck without being logged in");
-                return new(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
-            }
-
+        public static Response GetDeck([Bearer] Token token) {
             Deck? deck = _deckRepository.FindByPlayer(token.PlayerId);
 
             if (deck == null) {
@@ -34,13 +25,8 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
-        public static Response SetDeck([Header(Name = "Authorization")] string bearer, [Body] string[] cardIds) {
-            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
-            if (token == null) {
-                _logger.Info("Player tried to get deck without being logged in");
-                return new(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
-            }
-
+        public static Response SetDeck([Bearer] Token    token,
+                                       [Body]   string[] cardIds) {
             // TODO: Array ist hier null, JSON konnte nicht geparsed werden
             if (cardIds.Length != 4) {
                 return new(HttpCode.BAD_REQUEST_400, "{message: \"deck must contain exactly 4 cards\"}");
