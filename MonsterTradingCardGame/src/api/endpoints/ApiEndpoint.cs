@@ -5,5 +5,6 @@ namespace MonsterTradingCardGame.Api {
         
         public EHttpMethod HttpMethod { get; set; }
         public string? Url { get; set; }
+        public bool RequiresAuthentication { get; set; } = true;
     }
 }

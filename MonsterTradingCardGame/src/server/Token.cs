@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Server {
 
-    internal class Token {
+    public class Token {
 
         // /////////////////////////////////////////////////////////////////////
         // Properties
@@ -20,7 +20,7 @@ namespace MonsterTradingCardGame.Server {
             Username = username;
             // Bearer just consists of username and "-mtcgToken" appended.
             // This is not a secure way of generating a bearer token.
-            Bearer = username + "-mtcgToken";
+            Bearer = "Bearer " + username + "-mtcgToken";
             // Token expires after 30 minutes
             ExpiryDate = DateTime.Now.AddMinutes(30);
         }

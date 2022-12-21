@@ -18,15 +18,8 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = URL)]
-        public static Response CreatePackage([Header(Name = "Authorization")] string bearer, [Body] Card[] cards) {
-            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
-            if (token == null) {
-                _logger.Info("Player tried creating a package without being logged in");
-                return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
-            }
-
+        public static Response CreatePackage([Body] Card[] cards) {
             if (cards.Any(card => card.IsPersisted())) {
                 return new Response(HttpCode.BAD_REQUEST_400, "{message: \"card already has an id\"}");
             }
@@ -46,13 +39,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/transactions" + URL)]
-        public static Response BuyPackages([Header(Name = "Authorization")] string bearer) {
-            Token? token = SessionHandler.Instance.GetSession(bearer.Split(" ")[1]);
-            if (token == null) {
-                _logger.Info("Player tried to buy packages without being logged in");
-                return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
-            }
-
+        public static Response BuyPackages([Bearer] Token token) {
             Player? player = _playerRepository.FindById(token.PlayerId);
             _logger.Info($"Player {player?.Username} is buying a package...");
 

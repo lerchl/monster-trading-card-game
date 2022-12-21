@@ -1,5 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using MonsterTradingCardGame.Api;
+using MonsterTradingCardGame.Data.Player;
 using MonsterTradingCardGame.Server;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace MonsterTradingCardGame.Test {
@@ -11,12 +16,47 @@ namespace MonsterTradingCardGame.Test {
             // Arrange
             ApiEndpointRegister register = new(typeof(DummyApiEndpoint));
 
+            Guid playerId = Guid.NewGuid();
+            Player player = new(playerId, "test", "test", 0, "", "", "");
+            Token token = SessionHandler.Instance.CreateSession(playerId, "test");
+            Dictionary<string, string> headers = new() { { "Authorization", token.Bearer } };
+
+            Destination destination = new(EHttpMethod.GET, "/dummy/anotherUser?format=plain");
+            string json = System.Text.Json.JsonSerializer.Serialize(player);
+            JsonTextReader body = new(new StringReader(json));
+            HttpRequest httpRequest = new(destination, headers, body);
+
             // Act
-            Response res = register.Execute(new HttpRequest(new Destination(EHttpMethod.GET, "/dummy"), null, null));
+            Response res = register.Execute(httpRequest);
 
             // Assert
             Assert.AreEqual(HttpCode.OK_200, res.HttpCode);
-            Assert.AreEqual("Test", res.Body);
+            Assert.AreEqual(playerId + "anotherUser" + "plain" + player.Username, res.Body);
+        }
+
+        [Test]
+        public void TestExecuteNoUrl() {
+            // Arrange
+            string message = ApiEndpointRegister.URL_EXCEPTION_MESSAGE
+                    .Replace("{methodName}", "NoResponseTestEndpoint")
+                    .Replace("{httpMethodName}", "GET");
+
+            // Act / Assert
+            var e = Assert.Throws<ProgrammerFailException>(() => new ApiEndpointRegister(typeof(NoUrlDummyApiEndpoint)))!;
+            Assert.AreEqual(message, e.Message);
+        }
+
+        [Test]
+        public void TestExecuteNoResponse() {
+            // Arrange
+            string message = ApiEndpointRegister.RETURN_TYPE_EXCEPTION_MESSAGE
+                    .Replace("{methodName}", "NoResponseTestEndpoint")
+                    .Replace("{httpMethodName}", "GET")
+                    .Replace("{url}", "/dummy");
+
+            // Act / Assert
+            var e = Assert.Throws<ProgrammerFailException>(() => new ApiEndpointRegister(typeof(NoResponseDummyApiEndpoint)))!;
+            Assert.AreEqual(message, e.Message);
         }
     }
 }

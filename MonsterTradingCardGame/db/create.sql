@@ -2,7 +2,10 @@ CREATE TABLE PLAYER (
     ID       UUID   PRIMARY KEY DEFAULT gen_random_uuid(),
     USERNAME TEXT   UNIQUE      NOT NULL,
     PASSWORD TEXT               NOT NULL,
-    MONEY    INT                NOT NULL
+    MONEY    INT                NOT NULL,
+    NAME     TEXT,
+    BIO      TEXT,
+    IMAGE    TEXT
 );
 
 CREATE TABLE CARD (
@@ -17,11 +20,21 @@ CREATE TABLE CARD (
 );
 
 CREATE TABLE DECK (
-    ID        UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
-    PLAYER_ID UUID,
-    CARD_1_ID UUID,
-    CARD_2_ID UUID,
-    CARD_3_ID UUID,
-    CARD_4_ID UUID,
+    ID        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PLAYER_ID UUID             NOT NULL,
+    CARD_1_ID UUID             NOT NULL,
+    CARD_2_ID UUID             NOT NULL,
+    CARD_3_ID UUID             NOT NULL,
+    CARD_4_ID UUID             NOT NULL,
     FOREIGN KEY (PLAYER_ID) REFERENCES PLAYER (ID)
+);
+
+CREATE TABLE TRADE (
+    ID             UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
+    PLAYER_ID      UUID                NOT NULL,
+    CARD_ID        UUID                NOT NULL,
+    CARD_TYPE      INTEGER             NOT NULL,
+    MINIMUM_DAMAGE DECIMAL             NOT NULL,
+    FOREIGN KEY (PLAYER_ID) REFERENCES PLAYER (ID),
+    FOREIGN KEY (CARD_ID)   REFERENCES CARD   (ID)
 );
