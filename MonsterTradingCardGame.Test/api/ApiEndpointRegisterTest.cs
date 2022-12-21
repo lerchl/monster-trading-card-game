@@ -38,7 +38,7 @@ namespace MonsterTradingCardGame.Test {
         public void TestExecuteNoUrl() {
             // Arrange
             string message = ApiEndpointRegister.URL_EXCEPTION_MESSAGE
-                    .Replace("{methodName}", "NoResponseTestEndpoint")
+                    .Replace("{methodName}", "NoUrlTestEndpoint")
                     .Replace("{httpMethodName}", "GET");
 
             // Act / Assert
