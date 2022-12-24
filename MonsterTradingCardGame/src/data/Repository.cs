@@ -128,15 +128,12 @@ namespace MonsterTradingCardGame.Data {
                     object? value = property.GetValue(entity);
                     if (value == null) {
                         sb.Append("null");
-                    } else if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
+                    } else if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?) || property.PropertyType == typeof(Guid)) {
                         sb.Append('\'');
-                        sb.Append(property.GetValue(entity));
+                        sb.Append(value);
                         sb.Append('\'');
                     } else if (property.PropertyType.IsEnum) {
-                        object? enumValue = property.GetValue(entity);
-                        if (enumValue != null) {
-                            sb.Append((int) enumValue);
-                        }
+                        sb.Append((int) value);
                     } else {
                         sb.Append(property.GetValue(entity));
                     }

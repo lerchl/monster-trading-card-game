@@ -13,17 +13,18 @@ namespace MonsterTradingCardGame.Data.Trade {
         [Column(Name = "CARD_TYPE")]
         public CardType Type { get; private set; }
 
+        [Column(Name = "MINIMUM_DAMAGE")]
         public double MinimumDamage { get; private set; }
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Trade(Guid id, Guid playerId, Guid cardId, CardType type, double minimumDamage) : base(id) {
+        public Trade(Guid id, Guid playerId, Guid cardId, CardType type, decimal minimumDamage) : base(id) {
             PlayerId = playerId;
             CardId = cardId;
             Type = type;
-            MinimumDamage = minimumDamage;
+            MinimumDamage = (double) minimumDamage;
         }
     }
 }

@@ -237,7 +237,7 @@ echo check trading deals
 curl -X GET http://localhost:10001/trades --header "Authorization: Bearer kienboec-mtcgToken"
 echo.
 echo create trading deal
-curl -X POST http://localhost:10001/trades --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Id\": \"17a2b9f8-de6a-4566-ad7f-883a4db5769e\", \"CardId\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"CardType\": 0, \"MinimumDamage\": 15}"
+curl -X POST http://localhost:10001/trades --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"CardId\": \"c96d1df2-a2f5-46c4-946e-da760b98a29e\", \"CardType\": 0, \"MinimumDamage\": 15}"
 echo.
 echo check trading deals
 curl -X GET http://localhost:10001/trades --header "Authorization: Bearer kienboec-mtcgToken"
@@ -253,7 +253,7 @@ REM --------------------------------------------------
 echo 21) check trading deals
 curl -X GET http://localhost:10001/trades  --header "Authorization: Bearer kienboec-mtcgToken"
 echo.
-curl -X POST http://localhost:10001/trades --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"Id\": \"6cd85277-4590-49d4-b0cf-ba0a921faad0\", \"CardId\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"CardType\": 0, \"MinimumDamage\": 15}"
+curl -X POST http://localhost:10001/trades --header "Content-Type: application/json" --header "Authorization: Bearer kienboec-mtcgToken" -d "{\"CardId\": \"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"CardType\": 0, \"MinimumDamage\": 15}"
 echo check trading deals
 curl -X GET http://localhost:10001/trades  --header "Authorization: Bearer kienboec-mtcgToken"
 echo.
