@@ -1,3 +1,4 @@
+using System.Data.Common;
 using MonsterTradingCardGame;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Data;
@@ -49,7 +50,7 @@ namespace Api.Endpoints {
                 Player dbPlayer = _playerRepository.Save(player);
                 _logger.Info($"User {username} has registered");
                 dbPlayer.Password = "";
-                return new Response(HttpCode.CREATED_201);
+                return new Response(HttpCode.CREATED_201, dbPlayer);
             }
 
             _logger.Info($"User {username} tried to register but the username is already taken");
