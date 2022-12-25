@@ -91,7 +91,7 @@ namespace MonsterTradingCardGame.Server {
                 headers.Add(header, value);
             }
 
-            string dataPattern = @"(\[?\{.*\}\]?)";
+            string dataPattern = @"(\[?\{(.|\r|\n)*\}\]?)";
             Regex dataRegex = new(dataPattern);
             Match dataMatch = dataRegex.Match(text);
 

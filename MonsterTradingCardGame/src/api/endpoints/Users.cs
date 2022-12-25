@@ -25,7 +25,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
             }
 
             Player dbPlayer = _playerRepository.FindById(bearer.PlayerId)!;
-            dbPlayer.Password = "*redacted*";
+            dbPlayer.Password = "";
             return new(HttpCode.OK_200, dbPlayer);
         }
 
@@ -43,17 +43,9 @@ namespace MonsterTradingCardGame.Api.Endpoints {
             dbPlayer.Bio = player.Bio;
             dbPlayer.Image = player.Image;
 
-            // TODO: this is kinda weird,
-            // the repository should always return the updated object if the save was succesful
-            // so there should be an exception rather than a possibility for null
             dbPlayer = _playerRepository.Save(dbPlayer);
 
-            if (dbPlayer == null) {
-                _logger.Error($"Player {username} could not be saved");
-                return new(HttpCode.INTERNAL_SERVER_ERROR_500, "{message: \"could not save player\"}");
-            }
-
-            dbPlayer.Password = "*redacted*";
+            dbPlayer.Password = "";
             return new(HttpCode.OK_200, dbPlayer);
         }
     }

@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Text;
 using Npgsql;
 
 namespace MonsterTradingCardGame.Data {
@@ -17,11 +16,13 @@ namespace MonsterTradingCardGame.Data {
         /// </summary>
         /// <param name="entity">The entity</param>
         /// <returns>The saved entity</returns>
-        public T? Save(T entity) {
+        public T Save(T entity) {
+            PropertyInfo[] properties = typeof(T).GetProperties().Where(p => p.Name != "id").ToArray();
+
             if (entity.IsPersisted()) {
-                return Update(entity);
+                return Update(entity, properties);
             } else {
-                return Insert(entity);
+                return Insert(entity, properties);
             }
         }
 
@@ -30,7 +31,7 @@ namespace MonsterTradingCardGame.Data {
         /// </summary>
         /// <param name="id">Id of the entity</param>
         /// <returns>The entity</returns>
-        public T? FindById(Guid id) {
+        public T FindById(Guid id) {
             string query = $"SELECT * FROM {typeof(T).Name} WHERE id = :id";
             var command = new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = {
@@ -68,10 +69,10 @@ namespace MonsterTradingCardGame.Data {
         // Helper
         // /////////////////////////////////////////////////////////////////////
 
-        protected static T? ConstructEntity(NpgsqlDataReader result, bool close = true) {
+        protected static T ConstructEntity(NpgsqlDataReader result, bool close = true) {
             if (!result.Read()) {
                 result.Close();
-                return null;
+                throw new NoResultException();
             }
 
             object?[] values = new object[result.FieldCount];
@@ -84,7 +85,7 @@ namespace MonsterTradingCardGame.Data {
                 result.Close();
             }
 
-            return typeof(T).GetConstructors()[0].Invoke(values) as T;
+            return (typeof(T).GetConstructors()[0].Invoke(values) as T)!;
         }
 
         protected static List<T> ConstructEntityList(NpgsqlDataReader result) {
@@ -102,86 +103,47 @@ namespace MonsterTradingCardGame.Data {
         // Save
         // /////////////////////////////////////////////////////////////////////
 
-        private T? Insert(T entity) {
-            PropertyInfo[] properties = typeof(T).GetProperties();
-            string query = $"INSERT INTO {typeof(T).Name} ({PropertiesToString(properties)}) VALUES ({ValuesOfPropertiesToString(properties, entity)}) RETURNING ID";
-            Guid id = (Guid) new NpgsqlCommand(query, _entityManager.connection).ExecuteScalar();
+        private T Insert(T entity, PropertyInfo[] properties) {
+            string[] placeholders = PropertiesAsStrings(properties).Select(p => ":" + p).ToArray();
+
+            string query = $"INSERT INTO {typeof(T).Name} " +
+                           $"({string.Join(", ", PropertiesAsStrings(properties))}) " +
+                           $"VALUES ({string.Join(", ", placeholders)}) RETURNING ID";
+
+            var command = new NpgsqlCommand(query, _entityManager.connection);
+            command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
+
+            Guid id = (Guid) command.ExecuteScalar()!;
             return FindById(id);
         }
 
-        private static string PropertiesToString(PropertyInfo[] properties) {
-            StringBuilder sb = new();
-            foreach (PropertyInfo property in properties) {
-                if (property.Name != "id") {
-                    Column? column = property.GetCustomAttribute<Column>();
-                    sb.Append(column == null ? property.Name : column.Name);
-                    sb.Append(',');
-                }
-            }
-            return sb.ToString()[..^1];
-        }
+        private T Update(T entity, PropertyInfo[] properties) {
+            string[] placeholders = PropertiesAsStrings(properties).Select(p => p + " = :" + p).ToArray();
 
-        private static string ValuesOfPropertiesToString(PropertyInfo[] properties, T entity) {
-            StringBuilder sb = new();
-            foreach (PropertyInfo property in properties) {
-                if (property.Name != "id") {
-                    object? value = property.GetValue(entity);
-                    if (value == null) {
-                        sb.Append("null");
-                    } else if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?) || property.PropertyType == typeof(Guid)) {
-                        sb.Append('\'');
-                        sb.Append(value);
-                        sb.Append('\'');
-                    } else if (property.PropertyType.IsEnum) {
-                        sb.Append((int) value);
-                    } else {
-                        sb.Append(property.GetValue(entity));
-                    }
-                    sb.Append(',');
-                }
-            }
-            return sb.ToString()[..^1];
-        }
+            string query = $"UPDATE {typeof(T).Name} " + 
+                           $"SET ({string.Join(", ", placeholders)}) " +
+                            "WHERE id = :id RETURNING id;";
 
-        private T? Update(T entity) {
-            PropertyInfo[] properties = typeof(T).GetProperties();
+            var command = new NpgsqlCommand(query, _entityManager.connection);
+            command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
 
-            string query = $"UPDATE {typeof(T).Name} SET {FieldAndValuePairsToString(properties, entity)} WHERE id = :id RETURNING id;";
-            Guid id = (Guid) new NpgsqlCommand(query, _entityManager.connection) {
-                Parameters = { new(":id", entity.id) }
-            }.ExecuteScalar();
-
+            Guid id = (Guid) command.ExecuteScalar()!;
             return FindById(id);
         }
 
-        private static string FieldAndValuePairsToString(PropertyInfo[] properties, T entity) {
-            StringBuilder sb = new();
-            foreach (PropertyInfo property in properties) {
-                if (property.Name != "id") {
-                    Column? column = property.GetCustomAttribute<Column>();
-                    sb.Append(column == null ? property.Name : column.Name);
-                    sb.Append(" = ");
+        private static string[] PropertiesAsStrings(PropertyInfo[] properties) {
+            return properties.Select(p => {
+                Column? column = p.GetCustomAttribute<Column>();
+                return column == null ? p.Name : column.Name!;
+            }).ToArray();
+        }
 
-                    object? value = property.GetValue(entity);
-                    if (value == null) {
-                        sb.Append("null");
-                    } else if (property.PropertyType == typeof(string) || property.PropertyType == typeof(Guid?)) {
-                        sb.Append('\'');
-                        sb.Append(property.GetValue(entity));
-                        sb.Append('\'');
-                    } else if (property.PropertyType.IsEnum) {
-                        object? enumValue = property.GetValue(entity);
-                        if (enumValue != null) {
-                            sb.Append((int) enumValue);
-                        }
-                    } else {
-                        sb.Append(property.GetValue(entity));
-                    }
-
-                    sb.Append(", ");
-                }
-            }
-            return sb.ToString()[..^2];
+        private static NpgsqlParameter[] PropertiesAsParameters(PropertyInfo[] properties, T entity) {
+            return properties.Select(p => {
+                Column? column = p.GetCustomAttribute<Column>();
+                object? value = p.GetValue(entity);
+                return new NpgsqlParameter(":" + (column == null ? p.Name : column.Name), value ?? "null");
+            }).ToArray();
         }
     }
 }
