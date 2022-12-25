@@ -18,9 +18,7 @@ namespace MonsterTradingCardGame.Server {
         public Token(Guid playerId, string username) {
             PlayerId = playerId;
             Username = username;
-            // Bearer just consists of username and "-mtcgToken" appended.
-            // This is not a secure way of generating a bearer token.
-            Bearer = "Bearer " + username + "-mtcgToken";
+            Bearer = "Bearer " + Guid.NewGuid().ToString();
             // Token expires after 30 minutes
             ExpiryDate = DateTime.Now.AddMinutes(30);
         }
