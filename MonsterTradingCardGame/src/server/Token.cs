@@ -18,7 +18,7 @@ namespace MonsterTradingCardGame.Server {
         public Token(Guid playerId, string username) {
             PlayerId = playerId;
             Username = username;
-            Bearer = "Bearer " + Guid.NewGuid().ToString();
+            Bearer = Guid.NewGuid().ToString();
             // Token expires after 30 minutes
             ExpiryDate = DateTime.Now.AddMinutes(30);
         }

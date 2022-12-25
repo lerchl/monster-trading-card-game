@@ -65,6 +65,8 @@ namespace MonsterTradingCardGame.Server {
         /// <param name="bearer">The bearer</param>
         /// <returns>The token, if it exists and has not expired, null otherwise.</returns>
         public Token? GetSession(string bearer) {
+            bearer = bearer.Replace("Bearer ", "");
+
             if (Sessions.ContainsKey(bearer)) {
                 Token token = Sessions[bearer];
                 if (token.ExpiryDate > DateTime.Now) {
