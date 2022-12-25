@@ -141,8 +141,17 @@ namespace MonsterTradingCardGame.Data {
         private static NpgsqlParameter[] PropertiesAsParameters(PropertyInfo[] properties, T entity) {
             return properties.Select(p => {
                 Column? column = p.GetCustomAttribute<Column>();
-                object? value = p.GetValue(entity);
-                return new NpgsqlParameter(":" + (column == null ? p.Name : column.Name), value ?? "null");
+
+                object? value = null;
+                if (p.PropertyType.IsEnum && p.GetValue(entity) != null) {
+                    // result of getValue cannot be null,
+                    // because it is checked in the if statement
+                    value = (int) p.GetValue(entity)!;
+                } else {
+                    value = p.GetValue(entity);
+                }
+
+                return new NpgsqlParameter(":" + (column == null ? p.Name : column.Name), value ?? DBNull.Value);
             }).ToArray();
         }
     }
