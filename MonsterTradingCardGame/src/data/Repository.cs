@@ -70,24 +70,15 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         /// <summary>
-        ///    Constructs an entity from a <see cref="NpgsqlDataReader"/>.
+        ///    Constructs an entity from a <see cref="NpgsqlDataReader" />.
         /// </summary>
-        /// <param name="result">The result of the <see cref="NpgsqlCommand"/></param>
-        /// <param name="single">
-        ///     If <see langword="true"/>:
-        ///     <list type="bullet">
-        ///         <item>the result will be closed after one read.</item>
-        ///         <item>a <see cref="NoResultException"/> will be thrown, if there is nothing to read.</item>
-        ///     </list>
-        /// </param>
+        /// <param name="result">The result of the <see cref="NpgsqlCommand" /></param>
+        /// <param name="close">Determines whether the result will be closed</param>
         /// <returns>The entity</returns>
-        protected static E ConstructEntity(NpgsqlDataReader result, bool single = true) {
+        protected static E ConstructEntity(NpgsqlDataReader result, bool close = true) {
             if (!result.Read()) {
                 result.Close();
-
-                if (!single) {
-                    throw new NoResultException();
-                }
+                throw new NoResultException();
             }
 
             object?[] values = new object[result.FieldCount];
@@ -96,19 +87,28 @@ namespace MonsterTradingCardGame.Data {
                 values[i] = value.GetType() == typeof(DBNull) ? null : value;
             }
 
-            if (single) {
+            if (close) {
                 result.Close();
             }
 
             return (typeof(E).GetConstructors()[0].Invoke(values) as E)!;
         }
 
+        /// <summary>
+        ///     Constructs a list of entities from a <see cref="NpgsqlDataReader" />.
+        /// </summary>
+        /// <param name="result">The result of the <see cref="NpgsqlCommand"/></param>
+        /// <returns>The list of entities</returns>
+        /// <seealso cref="ConstructEntity(NpgsqlDataReader, bool)" />
         protected static List<E> ConstructEntityList(NpgsqlDataReader result) {
             List<E> entities = new();
-            E? entity;
 
-            while ((entity = ConstructEntity(result, false)) != null) {
-                entities.Add(entity);
+            try {
+               for (;;) {
+                    entities.Add(ConstructEntity(result, false));
+                }
+            } catch (NoResultException) {
+                // no more entities to construct
             }
 
             result.Close();
@@ -136,14 +136,16 @@ namespace MonsterTradingCardGame.Data {
             string[] placeholders = PropertiesAsStrings(properties).Select(p => p + " = :" + p).ToArray();
 
             string query = $"UPDATE {typeof(E).Name} " + 
-                           $"SET ({string.Join(", ", placeholders)}) " +
-                            "WHERE id = :id RETURNING id;";
+                           $"SET {string.Join(", ", placeholders)} " +
+                            "WHERE id = :id;";
 
             var command = new NpgsqlCommand(query, _entityManager.connection);
             command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
+            command.Parameters.Add(new NpgsqlParameter(":id", entity.id));
+            command.ExecuteNonQuery();
 
-            Guid id = (Guid) command.ExecuteScalar()!;
-            return FindById(id);
+            // id cannot be null, see Save method
+            return FindById((Guid) entity.id!);
         }
 
         private static string[] PropertiesAsStrings(PropertyInfo[] properties) {

@@ -47,10 +47,9 @@ namespace Api.Endpoints {
                 _playerRepository.FindByUsername(username);
             } catch (NoResultException) {
                 player.Money = 20;
-                Player dbPlayer = _playerRepository.Save(player);
+                _playerRepository.Save(player);
                 _logger.Info($"User {username} has registered");
-                dbPlayer.Password = "";
-                return new Response(HttpCode.CREATED_201, dbPlayer);
+                return new Response(HttpCode.CREATED_201);
             }
 
             _logger.Info($"User {username} tried to register but the username is already taken");
