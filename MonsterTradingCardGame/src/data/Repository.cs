@@ -78,7 +78,7 @@ namespace MonsterTradingCardGame.Data {
         protected static E ConstructEntity(NpgsqlDataReader result, bool close = true) {
             if (!result.Read()) {
                 result.Close();
-                throw new NoResultException();
+                throw new NoResultException($"{typeof(E).Name} not found");
             }
 
             object?[] values = new object[result.FieldCount];

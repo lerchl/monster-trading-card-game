@@ -1,4 +1,6 @@
-using MonsterTradingCardGame.Data.Deck;
+using MonsterTradingCardGame.Data;
+using MonsterTradingCardGame.Logic;
+using MonsterTradingCardGame.Logic.Exceptions;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Api.Endpoints {
@@ -7,7 +9,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         private const string URL = "/decks";
 
-        private static readonly DeckRepository _deckRepository = new();
+        private static readonly DeckLogic _logic = new();
 
         // /////////////////////////////////////////////////////////////////////
         // Methods
@@ -15,31 +17,25 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
         public static Response GetDeck([Bearer] Token token) {
-            Deck? deck = _deckRepository.FindByPlayer(token.PlayerId);
-
-            if (deck == null) {
-                return new(HttpCode.NOT_FOUND_404, "{message: \"deck not found\"}");
+            try {
+                return new(HttpCode.OK_200, _logic.FindByPlayer(token.PlayerId));
+            } catch (NoResultException) {
+                return new(HttpCode.NO_CONTENT_204);
             }
-
-            return new(HttpCode.OK_200, deck);
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
-        public static Response SetDeck([Bearer] Token    token,
-                                       [Body]   string[] cardIds) {
-            // TODO: Array ist hier null, JSON konnte nicht geparsed werden
-            if (cardIds.Length != 4) {
-                return new(HttpCode.BAD_REQUEST_400, "{message: \"deck must contain exactly 4 cards\"}");
+        public static Response SetDeck([Bearer] Token  token,
+                                       [Body]   Guid[] cardIds) {
+            try {
+                return new(HttpCode.OK_200, _logic.Set(token, cardIds));
+            } catch (BadRequestException e) {
+                return new(HttpCode.BAD_REQUEST_400, e.Message);
+            } catch (ForbiddenException e) {
+                return new(HttpCode.FORBIDDEN_403, e.Message);
+            } catch (NoResultException e) {
+                return new(HttpCode.FORBIDDEN_403, e.Message);
             }
-
-            Deck? savedDeck = _deckRepository.Save(new(token.PlayerId, token.PlayerId,
-                    Guid.Parse(cardIds[0]), Guid.Parse(cardIds[1]), Guid.Parse(cardIds[2]), Guid.Parse(cardIds[3])));
-
-            if (savedDeck == null) {
-                return new(HttpCode.INTERNAL_SERVER_ERROR_500, "{message: \"deck could not be saved\"}");
-            }
-
-            return new(HttpCode.CREATED_201, savedDeck);
         }
     }
 }

@@ -2,7 +2,7 @@ using MonsterTradingCardGame.Data;
 
 namespace MonsterTradingCardGame.Logic {
 
-    internal class Logic<T, E> where T : Repository<E> where E : Entity {
+    internal abstract class Logic<T, E> where T : Repository<E> where E : Entity {
 
         protected T Repository { get; }
 

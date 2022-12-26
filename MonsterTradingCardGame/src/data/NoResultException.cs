@@ -4,6 +4,13 @@ namespace MonsterTradingCardGame.Data {
     ///    Exception for when no result is found.
     /// </summary>
     internal class NoResultException : Exception {
-        // noop
+
+        // /////////////////////////////////////////////////////////////////////
+        // Init
+        // /////////////////////////////////////////////////////////////////////
+
+        public NoResultException(string message) : base(message) {
+            // noop
+        }
     }
 }
