@@ -66,6 +66,8 @@ namespace MonsterTradingCardGame.Api {
             if (endpointTable.ContainsKey(destination)) {
                 methodInfo = endpointTable[destination];
             } else {
+                // TODO: regular endpoints with regex count as generic endpoints but shouldnt
+
                 // exact match for endpoint could not be found
                 // might be an endpoint with path params
                 Destination? genericDestination = endpointTable.Keys.ToList().FirstOrDefault(d => GenericDestinationMatches(d, destination));
