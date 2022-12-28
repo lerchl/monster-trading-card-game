@@ -1,10 +1,14 @@
 using Npgsql;
 
-namespace MonsterTradingCardGame.Data.Player {
+namespace MonsterTradingCardGame.Data.User {
 
-    internal class PlayerRepository : Repository<Player> {
+    internal class UserRepository : Repository<User> {
 
-        public Player FindByUsername(string username) {
+        // /////////////////////////////////////////////////////////////////////
+        // Methods
+        // /////////////////////////////////////////////////////////////////////
+
+        public User FindByUsername(string username) {
             string query = @"SELECT * FROM player WHERE username = :username;";
             var result = new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = { new NpgsqlParameter(":username", username) }

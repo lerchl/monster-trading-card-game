@@ -15,7 +15,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
         public static Response FindAllCardsByPlayer([Bearer] Token token) {
-            List<Card> cards = _cardRepository.FindAllByPlayer(token.PlayerId);
+            List<Card> cards = _cardRepository.FindAllByPlayer(token.UserId);
             return new(HttpCode.OK_200, cards);
         }
     }

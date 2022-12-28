@@ -16,5 +16,8 @@ namespace MonsterTradingCardGame.Logic {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
+        public Card[] PullCards(Guid package, Guid player) {
+            return Repository.PullCards(package, player);
+        }
     }
 }

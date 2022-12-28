@@ -14,12 +14,12 @@ namespace MonsterTradingCardGame.Data.Cards {
             return ConstructEntityList(command.ExecuteReader());
         }
 
-        public List<Card?> PullCards(Guid package, Guid player) {
+        public Card[] PullCards(Guid package, Guid player) {
             return FindAllByPackage(package).Select(card => {
                 card.PlayerId = player;
                 card.PackageId = null;
                 return Save(card);
-            }).ToList();
+            }).ToArray();
         }
 
         public List<Card> FindAllByPackage(Guid package) {

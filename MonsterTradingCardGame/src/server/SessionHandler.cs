@@ -1,4 +1,5 @@
 using MonsterTradingCardGame.Api;
+using MonsterTradingCardGame.Data.User;
 
 namespace MonsterTradingCardGame.Server {
 
@@ -47,13 +48,14 @@ namespace MonsterTradingCardGame.Server {
         // /////////////////////////////////////////////////////////////////////
 
         /// <summary>
-        ///     Creates a new session for a player
+        ///     Creates a new session for a <see cref="User"/>.
         /// </summary>
-        /// <param name="playerId">The id of the player</param>
-        /// <param name="username">The username of the player</param>
+        /// <param name="userId">The id of the user</param>
+        /// <param name="username">The username of the user</param>
+        /// <param name="userRole">The role of the user</param>
         /// <returns>The token linked to the session</returns>
-        public Token CreateSession(Guid playerId, string username) {
-            Token token = new(playerId, username);
+        public Token CreateSession(Guid userId, string username, UserRole userRole) {
+            Token token = new(userId, username, userRole);
             Sessions.Add(token.Bearer, token);
             _logger.Info($"Created session for user {username}");
             return token;

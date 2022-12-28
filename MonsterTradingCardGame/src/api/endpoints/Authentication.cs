@@ -1,8 +1,7 @@
-using System.Data.Common;
 using MonsterTradingCardGame;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Data;
-using MonsterTradingCardGame.Data.Player;
+using MonsterTradingCardGame.Data.User;
 using MonsterTradingCardGame.Server;
 
 namespace Api.Endpoints {
@@ -11,43 +10,43 @@ namespace Api.Endpoints {
 
         private static readonly Logger<Authentication> _logger = new();
 
-        private static readonly PlayerRepository _playerRepository = new();
+        private static readonly UserRepository _userRepository = new();
 
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/sessions$", RequiresAuthentication = false)]
-        public static Response Login([Body] Player player) {
-            string username = player.Username;
+        public static Response Login([Body] User user) {
+            string username = user.Username;
 
-            Player dbPlayer;
+            User dbPlayer;
             try {
-                dbPlayer = _playerRepository.FindByUsername(username);
+                dbPlayer = _userRepository.FindByUsername(username);
             } catch (NoResultException) {
                 _logger.Info($"Unknown user {username} tried to login");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             }
 
-            if (!dbPlayer.Password.Equals(player.Password)) {
+            if (!dbPlayer.Password.Equals(user.Password)) {
                 _logger.Info($"User {username} tried to login with the wrong password");
                 return new Response(HttpCode.UNAUTHORIZED_401, "{message: \"username or password wrong\"}");
             } else {
                 _logger.Info($"User {username} has logged in");
-                Token token = SessionHandler.Instance.CreateSession((Guid) dbPlayer.id, dbPlayer.Username);
+                Token token = SessionHandler.Instance.CreateSession(dbPlayer.Id, dbPlayer.Username, dbPlayer.Role);
                 return new Response(HttpCode.OK_200, $"{{\"token\": \"{token.Bearer}\"}}");
             }
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/users$", RequiresAuthentication = false)]
-        public static Response Register([Body] Player player) {
+        public static Response Register([Body] User player) {
             string username = player.Username;
 
             try {
-                _playerRepository.FindByUsername(username);
+                _userRepository.FindByUsername(username);
             } catch (NoResultException) {
                 player.Money = 20;
-                _playerRepository.Save(player);
+                _userRepository.Save(player);
                 _logger.Info($"User {username} has registered");
                 return new Response(HttpCode.CREATED_201);
             }

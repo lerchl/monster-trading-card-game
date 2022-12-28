@@ -2,7 +2,7 @@ namespace MonsterTradingCardGame.Data {
 
     public abstract class Entity {
 
-        public readonly Guid? id;
+        public Guid Id { get; }
 
         // /////////////////////////////////////////////////////////////////////
         // Constructors
@@ -12,8 +12,11 @@ namespace MonsterTradingCardGame.Data {
             // default constructor
         }
 
-        public Entity(Guid? id) {
-            this.id = id;
+        /// <summary>
+        ///     Constructor for constructing an entity by a <see cref="Repository{E}"/>.
+        /// </summary>
+        public Entity(Guid id) {
+            Id = id;
         }
 
         // /////////////////////////////////////////////////////////////////////
@@ -21,7 +24,7 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         public bool IsPersisted() {
-            return id != null && id != Guid.Empty;
+            return Id != null && Id != Guid.Empty;
         }
     }
 }

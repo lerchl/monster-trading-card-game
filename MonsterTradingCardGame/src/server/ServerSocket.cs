@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Api.Endpoints;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Api.Endpoints;
+using MonsterTradingCardGame.Api.Endpoints.Users;
 using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame.Server {

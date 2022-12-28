@@ -1,6 +1,6 @@
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Data;
-using MonsterTradingCardGame.Data.Player;
+using MonsterTradingCardGame.Data.User;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Test {
@@ -13,8 +13,8 @@ namespace MonsterTradingCardGame.Test {
         public static Response TestEndpoint([Bearer]                                Token  token,
                                             [PathParam(Name = USERNAME_PATH_PARAM)] string username,
                                             [QueryParam(Name = "format")]           string format,
-                                            [Body]                                  Player player) {
-            string content = token.PlayerId + username + format + player.Username;
+                                            [Body]                                  User   user) {
+            string content = token.UserId + username + format + user.Username;
             return new Response(HttpCode.OK_200, content);
         }
     }

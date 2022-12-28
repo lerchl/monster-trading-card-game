@@ -2,6 +2,7 @@ CREATE TABLE PLAYER (
     ID       UUID   PRIMARY KEY DEFAULT gen_random_uuid(),
     USERNAME TEXT   UNIQUE      NOT NULL,
     PASSWORD TEXT               NOT NULL,
+    ROLE     INT                NOT NULL,
     MONEY    INT                NOT NULL,
     NAME     TEXT,
     BIO      TEXT,

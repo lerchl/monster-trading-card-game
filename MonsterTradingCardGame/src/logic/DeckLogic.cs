@@ -29,19 +29,19 @@ namespace MonsterTradingCardGame.Logic {
 
             List<Card> cards = cardIds.Select(id => _cardLogic.FindById(id)).ToList();
 
-            if (cards.Any(card => card.PlayerId != token.PlayerId)) {
+            if (cards.Any(card => card.PlayerId != token.UserId)) {
                 throw new ForbiddenException("You can only add your own cards to your deck");
             }
 
             Deck deck;
 
             try {
-                deck = Repository.FindByPlayer(token.PlayerId);
+                deck = Repository.FindByPlayer(token.UserId);
             } catch (NoResultException) {
-                deck = new(token.PlayerId, cards);
+                deck = new(token.UserId, cards);
             }
 
-            return Save(new Deck(token.PlayerId, cards));
+            return Save(new Deck(token.UserId, cards));
         }
 
         public Deck FindByPlayer(Guid playerId) {

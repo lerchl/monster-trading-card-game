@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using MonsterTradingCardGame.Api;
-using MonsterTradingCardGame.Data.Player;
+using MonsterTradingCardGame.Data.User;
 using MonsterTradingCardGame.Server;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -17,8 +17,8 @@ namespace MonsterTradingCardGame.Test {
             ApiEndpointRegister register = new(typeof(DummyApiEndpoint));
 
             Guid playerId = Guid.NewGuid();
-            Player player = new(playerId, "test", "test", 0, "", "", "");
-            Token token = SessionHandler.Instance.CreateSession(playerId, "test");
+            User player = new(playerId, "test", "test", 0, UserRole.Regular, "", "", "");
+            Token token = SessionHandler.Instance.CreateSession(playerId, "test", player.Role);
             Dictionary<string, string> headers = new() { { "Authorization", token.Bearer } };
 
             Destination destination = new(EHttpMethod.GET, "/dummy/anotherUser?format=plain");

@@ -18,7 +18,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
         public static Response GetDeck([Bearer] Token token) {
             try {
-                return new(HttpCode.OK_200, _logic.FindByPlayer(token.PlayerId));
+                return new(HttpCode.OK_200, _logic.FindByPlayer(token.UserId));
             } catch (NoResultException) {
                 return new(HttpCode.NO_CONTENT_204);
             }

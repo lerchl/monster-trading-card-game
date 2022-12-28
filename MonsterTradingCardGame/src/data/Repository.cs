@@ -7,6 +7,8 @@ namespace MonsterTradingCardGame.Data {
 
         protected readonly EntityManager _entityManager = EntityManager.Instance;
 
+        private readonly string _tableName = typeof(E).GetCustomAttribute<Table>()?.Name ?? typeof(E).Name;
+
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
@@ -17,7 +19,7 @@ namespace MonsterTradingCardGame.Data {
         /// <param name="entity">The entity</param>
         /// <returns>The saved entity</returns>
         public E Save(E entity) {
-            PropertyInfo[] properties = typeof(E).GetProperties().Where(p => p.Name != "id").ToArray();
+            PropertyInfo[] properties = typeof(E).GetProperties().Where(p => p.Name != "Id").ToArray();
 
             if (entity.IsPersisted()) {
                 return Update(entity, properties);
@@ -32,10 +34,10 @@ namespace MonsterTradingCardGame.Data {
         /// <param name="id">Id of the entity</param>
         /// <returns>The entity</returns>
         public E FindById(Guid id) {
-            string query = $"SELECT * FROM {typeof(E).Name} WHERE id = :id";
+            string query = $"SELECT * FROM {_tableName} WHERE Id = :Id";
             var command = new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = {
-                    new(":id", id)
+                    new(":Id", id)
                 }
             };
             var result = command.ExecuteReader();
@@ -47,7 +49,7 @@ namespace MonsterTradingCardGame.Data {
         /// </summary>
         /// <returns>List of entities</returns>
         public List<E> FindAll() {
-            string query = $"SELECT * FROM {typeof(E).Name};";
+            string query = $"SELECT * FROM {_tableName};";
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
             return ConstructEntityList(result);
         }
@@ -57,10 +59,10 @@ namespace MonsterTradingCardGame.Data {
         /// </summary>
         /// <param name="id">Id of the entity</param>
         public void Delete(Guid id) {
-            string query = $"DELETE FROM {typeof(E).Name} WHERE id = :id";
+            string query = $"DELETE FROM {_tableName} WHERE Id = :Id";
             var command = new NpgsqlCommand(query, _entityManager.connection) {
                 Parameters = {
-                    new(":id", id)
+                    new(":Id", id)
                 }
             };
             command.ExecuteNonQuery();
@@ -121,7 +123,7 @@ namespace MonsterTradingCardGame.Data {
         private E Insert(E entity, PropertyInfo[] properties) {
             string[] placeholders = PropertiesAsStrings(properties).Select(p => ":" + p).ToArray();
 
-            string query = $"INSERT INTO {typeof(E).Name} " +
+            string query = $"INSERT INTO {_tableName} " +
                            $"({string.Join(", ", PropertiesAsStrings(properties))}) " +
                            $"VALUES ({string.Join(", ", placeholders)}) RETURNING ID";
 
@@ -135,17 +137,16 @@ namespace MonsterTradingCardGame.Data {
         private E Update(E entity, PropertyInfo[] properties) {
             string[] placeholders = PropertiesAsStrings(properties).Select(p => p + " = :" + p).ToArray();
 
-            string query = $"UPDATE {typeof(E).Name} " + 
+            string query = $"UPDATE {_tableName} " + 
                            $"SET {string.Join(", ", placeholders)} " +
-                            "WHERE id = :id;";
+                            "WHERE Id = :Id;";
 
             var command = new NpgsqlCommand(query, _entityManager.connection);
             command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
-            command.Parameters.Add(new NpgsqlParameter(":id", entity.id));
+            command.Parameters.Add(new NpgsqlParameter(":Id", entity.Id));
             command.ExecuteNonQuery();
 
-            // id cannot be null, see Save method
-            return FindById((Guid) entity.id!);
+            return FindById(entity.Id);
         }
 
         private static string[] PropertiesAsStrings(PropertyInfo[] properties) {
