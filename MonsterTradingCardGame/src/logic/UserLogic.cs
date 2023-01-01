@@ -1,4 +1,5 @@
 using MonsterTradingCardGame.Api.Endpoints.Users;
+using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Data.User;
 using MonsterTradingCardGame.Logic.Exceptions;
 using MonsterTradingCardGame.Server;
@@ -18,6 +19,33 @@ namespace MonsterTradingCardGame.Logic {
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
+
+        public void Register(User user) {
+            try {
+                Repository.FindByUsername(user.Username);
+                throw new ConflictException("Username already taken");
+            } catch (NoResultException) {
+                user.Money = 20;
+                Save(user);
+            }
+        }
+
+        public Token Login(User user) {
+            string username = user.Username;
+
+            User dbUser;
+            try {
+                dbUser = Repository.FindByUsername(username);
+            } catch (NoResultException) {
+                throw new UnauthorizedException("Invalid username or password");
+            }
+
+            if (!dbUser.Password.Equals(user.Password)) {
+                throw new UnauthorizedException("Invalid username or password");
+            }
+
+            return SessionHandler.Instance.CreateSession(dbUser.Id, dbUser.Username, dbUser.Role);
+        }
 
         public UserVO GetInfo(Token token, string username) {
             if (token.UserRole != UserRole.Admin && !token.Username.Equals(username)) {

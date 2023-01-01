@@ -1,4 +1,5 @@
 using MonsterTradingCardGame.Data.User;
+using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame.Api.Endpoints.Users {
 
@@ -15,10 +16,15 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         // Init
         // /////////////////////////////////////////////////////////////////////
 
-        public UserVO(User user) {
-            Name = user.Name;
-            Bio = user.Bio;
-            Image = user.Image;
+        [JsonConstructor]
+        public UserVO(string? name, string? bio, string? image) {
+            Name = name;
+            Bio = bio;
+            Image = image;
+        }
+
+        public UserVO(User user) : this(user.Name, user.Bio, user.Image) {
+            // noop
         }
     }
 }

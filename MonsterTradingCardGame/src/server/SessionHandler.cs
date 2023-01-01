@@ -8,7 +8,7 @@ namespace MonsterTradingCardGame.Server {
     /// </summary>
     public class SessionHandler {
 
-        public static readonly Response UNAUTHORIZED_RESPONSE = new(HttpCode.UNAUTHORIZED_401, "{message: \"not logged in\"}");
+        public static readonly Response UNAUTHORIZED_RESPONSE = new(HttpCode.UNAUTHORIZED_401, "Not logged in");
 
         private static readonly Logger<SessionHandler> _logger = new();
         private static SessionHandler? _instance;

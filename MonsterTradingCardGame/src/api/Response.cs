@@ -17,9 +17,14 @@ namespace MonsterTradingCardGame.Api {
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Response(HttpCode httpCode, string? body = null) {
+        public Response(HttpCode httpCode) {
             HttpCode = httpCode;
-            Body = body;
+            Body = null;
+        }
+
+        public Response(HttpCode httpCode, string message) {
+            HttpCode = httpCode;
+            Body = $"{{ message: \"{message}\" }}";
         }
 
         public Response(HttpCode httpCode, object entity) {

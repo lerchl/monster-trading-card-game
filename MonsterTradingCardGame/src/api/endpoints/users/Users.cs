@@ -1,4 +1,5 @@
 using MonsterTradingCardGame.Data;
+using MonsterTradingCardGame.Data.User;
 using MonsterTradingCardGame.Logic;
 using MonsterTradingCardGame.Logic.Exceptions;
 using MonsterTradingCardGame.Server;
@@ -15,10 +16,20 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
-    
+
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/users$", RequiresAuthentication = false)]
+        public static Response Register([Body] User user) {
+            try {
+                _logic.Register(user);
+                return new Response(HttpCode.CREATED_201);
+            } catch (ConflictException e) {
+                return new Response(HttpCode.CONFLICT_409, e.Message);
+            }
+        }
+
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response FindByUsername([Bearer]                                Token bearer,
-                                              [PathParam(Name = USERNAME_PATH_PARAM)] string username) {
+        public static Response GetInfo([Bearer]                                Token bearer,
+                                       [PathParam(Name = USERNAME_PATH_PARAM)] string username) {
             try {
                 return new(HttpCode.OK_200, _logic.GetInfo(bearer, username));
             } catch (ForbiddenException e) {
@@ -29,9 +40,9 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
-        public static Response EditByUsername([Bearer]                                Token  token,
-                                              [PathParam(Name = USERNAME_PATH_PARAM)] string username,
-                                              [Body]                                  UserVO user) {
+        public static Response SetInfo([Bearer]                                Token  token,
+                                       [PathParam(Name = USERNAME_PATH_PARAM)] string username,
+                                       [Body]                                  UserVO user) {
             try {
                 return new(HttpCode.OK_200, _logic.SetInfo(token, username, user));
             } catch (ForbiddenException e) {
