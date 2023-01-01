@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Logic.Exceptions {
 
-    public class ConflictException : Exception {
+    internal class ConflictException : Exception {
 
         // /////////////////////////////////////////////////////////////////////
         // Init

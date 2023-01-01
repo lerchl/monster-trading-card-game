@@ -22,7 +22,18 @@ namespace MonsterTradingCardGame.Logic {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public Deck Set(Token token, Guid[] cardIds) {
+        public Card[] Get(Token token) {
+            Deck deck;
+            try {
+                deck = Repository.FindByPlayer(token.UserId);
+            } catch (NoResultException) {
+                throw new NoContentException("Deck not found");
+            }
+
+            return GetCards(token.Username, deck.GetCardIds());
+        }
+
+        public Card[] Set(Token token, Guid[] cardIds) {
             if (cardIds.Length != 4) {
                 throw new BadRequestException("Deck must contain exactly 4 cards");
             }
@@ -41,11 +52,17 @@ namespace MonsterTradingCardGame.Logic {
                 deck = new(token.UserId, cards);
             }
 
-            return Save(new Deck(token.UserId, cards));
+            deck = Save(new Deck(token.UserId, cards));
+            return GetCards(token.Username, deck.GetCardIds());
         }
 
-        public Deck FindByPlayer(Guid playerId) {
-            return Repository.FindByPlayer(playerId);
+        private Card[] GetCards(string username, Guid[] cardIds) {
+            try {
+                return cardIds.Select(_cardLogic.FindById).ToArray();
+            } catch (NoResultException) {
+                string message = $"Card in deck of user {username} not found";
+                throw new InternalServerErrorException(message);
+            }
         }
     }
 }

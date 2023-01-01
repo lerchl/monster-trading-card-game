@@ -44,6 +44,10 @@ namespace MonsterTradingCardGame.Data.Deck {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
+        public Guid[] GetCardIds() {
+            return new[] { Card1Id, Card2Id, Card3Id, Card4Id };
+        }
+
         /// <summary>
         ///     Sets the cards of this deck.
         ///     The first 4 cards in the list will be used.

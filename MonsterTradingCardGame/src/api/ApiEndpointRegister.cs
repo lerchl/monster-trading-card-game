@@ -97,9 +97,18 @@ namespace MonsterTradingCardGame.Api {
             ParameterInfo[] parameterInfos = methodInfo.GetParameters();
             var parameters = parameterInfos.Select((parameterInfo, index) => ParseParameter(parameterInfo, httpRequest, destination, token)).ToArray();
 
-            // both cast and converting to non-null cannot fail here
-            // due to the checks done in the constructor
-            return (Response) methodInfo.Invoke(null, parameters)!;
+            try {
+                // both cast and converting to non-null cannot fail here
+                // due to the checks done in the constructor
+                return (Response) methodInfo.Invoke(null, parameters)!;
+            } catch (InternalServerErrorException e) {
+                _logger.Error(e.Message);
+                return new Response(HttpCode.INTERNAL_SERVER_ERROR_500);
+            } catch (Exception e) {
+                _logger.Error($"Unexpected exception of type {e.GetType().Name}:");
+                _logger.Error(e.Message);
+                return new Response(HttpCode.INTERNAL_SERVER_ERROR_500);
+            }
         }
 
         /// <summary

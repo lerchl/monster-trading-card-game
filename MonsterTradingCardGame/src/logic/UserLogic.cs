@@ -52,7 +52,7 @@ namespace MonsterTradingCardGame.Logic {
                 throw new ForbiddenException("You can only access your own data");
             }
 
-            return new(FindById(token.UserId));
+            return new(Repository.FindByUsername(username));
         }
 
         public UserVO SetInfo(Token token, string username, UserVO userVO) {
