@@ -30,5 +30,13 @@ namespace MonsterTradingCardGame.Data.Cards {
             PackageId = packageId;
             PlayerId = playerId;
         }
+
+        // /////////////////////////////////////////////////////////////////////
+        // Methoden
+        // /////////////////////////////////////////////////////////////////////
+
+        public override string ToString() {
+            return $"{Name} ({CardType}) [{ElementType}, {Damage}]";
+        }
     }
 }

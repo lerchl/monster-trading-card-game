@@ -9,7 +9,7 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
     internal class Users {
 
         private const string USERNAME_PATH_PARAM = "username";
-        private const string URL = $"^/users/(?'{USERNAME_PATH_PARAM}'{RegexUtils.Username})$";
+        private const string URL = $"^/users/(?'{USERNAME_PATH_PARAM}'{RegexUtils.USERNAME})$";
 
         private static readonly UserLogic _logic = new();
 

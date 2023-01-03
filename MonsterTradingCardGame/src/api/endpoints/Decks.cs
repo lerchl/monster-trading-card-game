@@ -1,6 +1,5 @@
-using System.Security.Principal;
 using MonsterTradingCardGame.Data;
-using MonsterTradingCardGame.Data.Deck;
+using MonsterTradingCardGame.Data.Cards;
 using MonsterTradingCardGame.Logic;
 using MonsterTradingCardGame.Logic.Exceptions;
 using MonsterTradingCardGame.Server;
@@ -18,12 +17,21 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         // /////////////////////////////////////////////////////////////////////
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response GetDeck([Bearer] Token token) {
+        public static Response GetDeck([Bearer]     Token  token,
+                                       [QueryParam] string format) {
+            Card[] cards;
+
             try {
-                return new(HttpCode.OK_200, _logic.Get(token));
+                cards = _logic.Get(token);
             } catch (NoContentException e) {
                 return new(HttpCode.NO_CONTENT_204, e.Message);
             }
+
+            if ("plain".Equals(format)) {
+                return new(HttpCode.OK_200, string.Join("\n", cards.Select(c => c.ToString()).ToArray()), false);
+            }
+
+            return new(HttpCode.OK_200, cards);
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]

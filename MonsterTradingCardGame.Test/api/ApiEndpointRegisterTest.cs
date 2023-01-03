@@ -17,7 +17,7 @@ namespace MonsterTradingCardGame.Test {
             ApiEndpointRegister register = new(typeof(DummyApiEndpoint));
 
             Guid playerId = Guid.NewGuid();
-            User player = new(playerId, "test", "test", 0, UserRole.Regular, "", "", "");
+            User player = new(playerId, "test", "test", UserRole.Regular, 0, "", "", "");
             Token token = SessionHandler.Instance.CreateSession(playerId, "test", player.Role);
             Dictionary<string, string> headers = new() { { "Authorization", token.Bearer } };
 

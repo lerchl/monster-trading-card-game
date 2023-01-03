@@ -14,7 +14,7 @@ namespace Api.Endpoints {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/sessions$", RequiresAuthentication = false)]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/sessions", RequiresAuthentication = false)]
         public static Response Login([Body] User user) {
             try {
                 return new(HttpCode.OK_200, _logic.Login(user));

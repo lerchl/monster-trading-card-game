@@ -22,9 +22,20 @@ namespace MonsterTradingCardGame.Api {
             Body = null;
         }
 
-        public Response(HttpCode httpCode, string message) {
+        /// <summary>
+        ///     Creates a new <see cref="Response"/> with the given <see cref="HttpCode"/> and message.
+        /// </summary>
+        /// <param name="httpCode">The <see cref="HttpCode"/> of the <see cref="Response"/></param>
+        /// <param name="message">The message of the <see cref="Response"/></param>
+        /// <param name="asJson">If true, the message will be sent as a JSON-Object</param>
+        public Response(HttpCode httpCode, string message, bool asJson = true) {
             HttpCode = httpCode;
-            Body = $"{{ message: \"{message}\" }}";
+
+            if (asJson) {
+                Body = $"{{ message: \"{message}\" }}";
+            } else {
+                Body = message;
+            }
         }
 
         public Response(HttpCode httpCode, object entity) {

@@ -34,7 +34,7 @@ namespace MonsterTradingCardGame.Api {
             }
         }
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = $"{URL}/(?'{TRADE_ID_PATH_PARAM}'{RegexUtils.Guid})$")]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = $"{URL}/(?'{TRADE_ID_PATH_PARAM}'{RegexUtils.GUID})$")]
         public static Response Trade([Bearer]                                Token token,
                                      [PathParam(Name = TRADE_ID_PATH_PARAM)] Guid  tradeId,
                                      [Body]                                  Guid  cardId) {
@@ -48,7 +48,7 @@ namespace MonsterTradingCardGame.Api {
             }
         }
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.DELETE, Url = $"{URL}/(?'{TRADE_ID_PATH_PARAM}'{RegexUtils.Guid})$")]
+        [ApiEndpoint(HttpMethod = EHttpMethod.DELETE, Url = $"{URL}/(?'{TRADE_ID_PATH_PARAM}'{RegexUtils.GUID})$")]
         public static Response DeleteTrade([Bearer]                                Token token,
                                            [PathParam(Name = TRADE_ID_PATH_PARAM)] Guid  tradeId) {
             try {

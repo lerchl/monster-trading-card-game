@@ -6,6 +6,7 @@ using Api.Endpoints;
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Api.Endpoints;
 using MonsterTradingCardGame.Api.Endpoints.Users;
+using MonsterTradingCardGame.Data;
 using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame.Server {
@@ -78,27 +79,26 @@ namespace MonsterTradingCardGame.Server {
         }
 
         private static HttpRequest ParseRequest(string text) {
-            string requestPattern = @"^(?'httpMethod'\w+) (?'endpoint'(/\w*)+)";
-            Regex requestRegex = new(requestPattern);
-            Match requestMatch = requestRegex.Match(text);
+            Match requestMatch = new Regex(RegexUtils.REQUEST_GROUPS).Match(text);
 
-            string headerPattern = @"^(?'header'\S+): (?'value'.+)$";
-            Regex headerRegex = new(headerPattern, RegexOptions.Multiline);
+            Regex headerRegex = new(RegexUtils.HEADERS_GROUPS, RegexOptions.Multiline);
             MatchCollection headerMatches = headerRegex.Matches(text);
             Dictionary<string, string> headers = new();
             foreach (Match headerMatch in headerMatches.Cast<Match>()) {
-                string header = headerMatch.Groups["header"].Value;
-                string value = Regex.Replace(headerMatch.Groups["value"].Value, @"\n|\r", "");
-                headers.Add(header, value);
+                string key = headerMatch.Groups[RegexUtils.HEADERS_KEY_GROUP_NAME].Value;
+                string value = Regex.Replace(headerMatch.Groups[RegexUtils.HEADERS_VALUE_GROUP_NAME].Value, @"\n|\r", "");
+                headers.Add(key, value);
             }
 
-            string dataPattern = @"(\[(.|\r|\n)*\])|(\{(.|\r|\n)*\})";
-            Regex dataRegex = new(dataPattern);
-            Match dataMatch = dataRegex.Match(text);
+            Match dataMatch = new Regex(RegexUtils.REQUEST_BODY).Match(text);
 
-            string httpMethod = requestMatch.Groups["httpMethod"].Value;
-            _ = Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod);
-            string apiEndpoint = requestMatch.Groups["endpoint"].Value;
+            string httpMethod = requestMatch.Groups[RegexUtils.HTTP_METHOD_GROUP_NAME].Value;
+
+            if (!Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod)) {
+                // TODO: throw method not allowed exception
+            }
+
+            string apiEndpoint = requestMatch.Groups[RegexUtils.ENDPOINT_GROUP_NAME].Value;
             return new HttpRequest(new(eHttpMethod, apiEndpoint), headers, new JsonTextReader(new StringReader(dataMatch.Value)));
         }
 

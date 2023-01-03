@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
+using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Server;
 using Newtonsoft.Json;
 
@@ -141,7 +142,14 @@ namespace MonsterTradingCardGame.Api {
                 // TODO: pathParamAttribute.Name could be null or not an actual group in the regex
                 return new Regex(genericDestination.endpoint).Match(httpRequest.Destination.endpoint).Groups[pathParamAttribute.Name].Value;
             } else if (queryParamAttribute != null) {
-                // TODO: query params
+                // cannot be null  as parameterInfo.Name can only be null
+                // if it is the ParameterInfo of a return value
+                string name = queryParamAttribute.Name ?? parameterInfo.Name!;
+                string pattern = name + "=(?'" + name + "'" + RegexUtils.QUERY_PARAM + ")";
+                Regex regex = new(pattern);
+                Match match = regex.Match(httpRequest.Destination.endpoint);
+
+                return match.Groups[name].Value;
             } else if (bodyAttribute != null) {
                 return new JsonSerializer().Deserialize(httpRequest.Data, parameterInfo.ParameterType);
             }
