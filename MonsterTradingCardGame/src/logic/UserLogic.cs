@@ -25,7 +25,6 @@ namespace MonsterTradingCardGame.Logic {
                 Repository.FindByUsername(user.Username);
                 throw new ConflictException("Username already taken");
             } catch (NoResultException) {
-                user.Money = 20;
                 Save(user);
             }
         }
@@ -47,7 +46,7 @@ namespace MonsterTradingCardGame.Logic {
             return SessionHandler.Instance.CreateSession(dbUser.Id, dbUser.Username, dbUser.Role);
         }
 
-        public UserVO GetInfo(Token token, string username) {
+        public UserInfoVO GetInfo(Token token, string username) {
             if (token.UserRole != UserRole.Admin && !token.Username.Equals(username)) {
                 throw new ForbiddenException("You can only access your own data");
             }
@@ -55,17 +54,30 @@ namespace MonsterTradingCardGame.Logic {
             return new(Repository.FindByUsername(username));
         }
 
-        public UserVO SetInfo(Token token, string username, UserVO userVO) {
+        public UserInfoVO SetInfo(Token token, string username, UserInfoVO userInfoVO) {
             if (token.UserRole != UserRole.Admin && !token.Username.Equals(username)) {
                 throw new ForbiddenException("You can only edit your own data");
             }
 
             User user = FindById(token.UserId);
-            user.Name = userVO.Name;
-            user.Bio = userVO.Bio;
-            user.Image = userVO.Image;
+            user.Name = userInfoVO.Name;
+            user.Bio = userInfoVO.Bio;
+            user.Image = userInfoVO.Image;
 
             return new(Save(user));
+        }
+
+        public UserStatsVO GetStats(Token token) {
+            User user = FindById(token.UserId);
+
+            // TODO: get wins and losses
+
+            return new(user, 0, 0);
+        }
+
+        public List<UserStatsVO> GetStats() {
+            // TODO: get wins and losses for all users
+            return new();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace MonsterTradingCardGame.Data {
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public EntityManager() {
+        private EntityManager() {
             string connectionString = "Host=localhost;Username=postgres;Password=gFA4lKnavg4iRsjfCR0m;Database=postgres";
             connection = new(connectionString);
             connection.Open();

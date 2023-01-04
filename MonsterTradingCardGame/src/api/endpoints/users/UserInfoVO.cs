@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 namespace MonsterTradingCardGame.Api.Endpoints.Users {
 
     /// <summary>
-    ///     View object for <see cref="Users" />
+    ///     View object for a <see cref="User" />'s info.
     /// </summary>
-    internal class UserVO {
+    internal class UserInfoVO {
 
         public string? Name { get; }
         public string? Bio { get; }
@@ -17,13 +17,13 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         // /////////////////////////////////////////////////////////////////////
 
         [JsonConstructor]
-        public UserVO(string? name, string? bio, string? image) {
+        public UserInfoVO(string? name, string? bio, string? image) {
             Name = name;
             Bio = bio;
             Image = image;
         }
 
-        public UserVO(User user) : this(user.Name, user.Bio, user.Image) {
+        public UserInfoVO(User user) : this(user.Name, user.Bio, user.Image) {
             // noop
         }
     }

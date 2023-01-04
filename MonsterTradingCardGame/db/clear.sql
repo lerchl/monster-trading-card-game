@@ -1,3 +1,4 @@
+DELETE FROM battle;
 DELETE FROM trade;
 DELETE FROM deck;
 DELETE FROM card;

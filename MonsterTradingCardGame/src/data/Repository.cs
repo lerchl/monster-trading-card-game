@@ -71,6 +71,8 @@ namespace MonsterTradingCardGame.Data {
         // Helper
         // /////////////////////////////////////////////////////////////////////
 
+        // TODO: static construct entity method
+
         /// <summary>
         ///    Constructs an entity from a <see cref="NpgsqlDataReader" />.
         /// </summary>

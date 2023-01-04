@@ -38,7 +38,7 @@ namespace MonsterTradingCardGame.Data {
         ///     Regular expression group with the name <see cref="ENDPOINT_GROUP_NAME"/>
         ///     for capturing the endpoint from a request.
         /// </summary>
-        private const string ENDPOINT_GROUP = $"(?'{ENDPOINT_GROUP_NAME}'(\\/[-\\w\\?.~%=]*))";
+        private const string ENDPOINT_GROUP = $"(?'{ENDPOINT_GROUP_NAME}'([-\\w\\?\\/.~%=]*))";
 
         /// <summary>
         ///     Regular expression groups for capturing the http method and endpoint from a request.

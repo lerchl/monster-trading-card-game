@@ -42,9 +42,9 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
         public static Response SetInfo([Bearer]                                Token  token,
                                        [PathParam(Name = USERNAME_PATH_PARAM)] string username,
-                                       [Body]                                  UserVO user) {
+                                       [Body]                                  UserInfoVO userInfoVO) {
             try {
-                return new(HttpCode.OK_200, _logic.SetInfo(token, username, user));
+                return new(HttpCode.OK_200, _logic.SetInfo(token, username, userInfoVO));
             } catch (ForbiddenException e) {
                 return new(HttpCode.FORBIDDEN_403, e.Message);
             } catch (NoResultException e) {
