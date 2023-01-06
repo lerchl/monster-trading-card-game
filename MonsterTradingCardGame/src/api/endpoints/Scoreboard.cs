@@ -1,8 +1,9 @@
+using MonsterTradingCardGame.Logic;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Api.Endpoints {
 
-    internal class Scores {
+    internal class Scoreboard {
 
         private const string URL = "/scoreboard";
 
@@ -13,8 +14,8 @@ namespace MonsterTradingCardGame.Api.Endpoints {
         // /////////////////////////////////////////////////////////////////////
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response Get([Bearer] Token token) {
-            return new();
+        public static Response Get() {
+            return new(HttpCode.OK_200, _logic.GetStats());
         }
     }
 }

@@ -13,6 +13,8 @@ namespace MonsterTradingCardGame.Api {
 
         public string? Body { get; private set; }
 
+        public bool IsJson { get; private set; } = true;
+
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
@@ -20,6 +22,7 @@ namespace MonsterTradingCardGame.Api {
         public Response(HttpCode httpCode) {
             HttpCode = httpCode;
             Body = null;
+            IsJson = false;
         }
 
         /// <summary>
@@ -35,6 +38,7 @@ namespace MonsterTradingCardGame.Api {
                 Body = $"{{ message: \"{message}\" }}";
             } else {
                 Body = message;
+                IsJson = false;
             }
         }
 

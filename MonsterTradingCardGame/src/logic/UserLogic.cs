@@ -25,6 +25,8 @@ namespace MonsterTradingCardGame.Logic {
                 Repository.FindByUsername(user.Username);
                 throw new ConflictException("Username already taken");
             } catch (NoResultException) {
+                user.Money = 20;
+                user.Elo = 100;
                 Save(user);
             }
         }
@@ -68,16 +70,11 @@ namespace MonsterTradingCardGame.Logic {
         }
 
         public UserStatsVO GetStats(Token token) {
-            User user = FindById(token.UserId);
-
-            // TODO: get wins and losses
-
-            return new(user, 0, 0);
+            return Repository.FindStatsById(token.UserId);
         }
 
         public List<UserStatsVO> GetStats() {
-            // TODO: get wins and losses for all users
-            return new();
+            return Repository.FindStats();
         }
     }
 }

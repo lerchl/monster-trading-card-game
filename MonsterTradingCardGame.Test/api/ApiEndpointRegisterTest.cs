@@ -16,13 +16,13 @@ namespace MonsterTradingCardGame.Test {
             // Arrange
             ApiEndpointRegister register = new(typeof(DummyApiEndpoint));
 
-            Guid playerId = Guid.NewGuid();
-            User player = new(playerId, "test", "test", UserRole.Regular, 0, "", "", "");
-            Token token = SessionHandler.Instance.CreateSession(playerId, "test", player.Role);
+            Guid userId = Guid.NewGuid();
+            User user = new(userId, "test", "test", UserRole.Regular, 0, "", "", "", 0);
+            Token token = SessionHandler.Instance.CreateSession(userId, "test", user.Role);
             Dictionary<string, string> headers = new() { { "Authorization", token.Bearer } };
 
             Destination destination = new(EHttpMethod.GET, "/dummy/anotherUser?format=plain");
-            string json = System.Text.Json.JsonSerializer.Serialize(player);
+            string json = System.Text.Json.JsonSerializer.Serialize(user);
             JsonTextReader body = new(new StringReader(json));
             HttpRequest httpRequest = new(destination, headers, body);
 
@@ -31,7 +31,7 @@ namespace MonsterTradingCardGame.Test {
 
             // Assert
             Assert.AreEqual(HttpCode.OK_200, res.HttpCode);
-            Assert.AreEqual(playerId + "anotherUser" + "plain" + player.Username, res.Body);
+            Assert.AreEqual(userId + "anotherUser" + "plain" + user.Username, res.Body);
         }
 
         [Test]

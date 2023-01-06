@@ -72,17 +72,10 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         // TODO: static construct entity method
-
-        /// <summary>
-        ///    Constructs an entity from a <see cref="NpgsqlDataReader" />.
-        /// </summary>
-        /// <param name="result">The result of the <see cref="NpgsqlCommand" /></param>
-        /// <param name="close">Determines whether the result will be closed</param>
-        /// <returns>The entity</returns>
-        protected static E ConstructEntity(NpgsqlDataReader result, bool close = true) {
+        public static T Construct<T>(NpgsqlDataReader result, bool close = true) {
             if (!result.Read()) {
                 result.Close();
-                throw new NoResultException($"{typeof(E).Name} not found");
+                throw new NoResultException($"{typeof(T).Name} not found");
             }
 
             object?[] values = new object[result.FieldCount];
@@ -95,7 +88,48 @@ namespace MonsterTradingCardGame.Data {
                 result.Close();
             }
 
-            return (typeof(E).GetConstructors()[0].Invoke(values) as E)!;
+            return (T) typeof(T).GetConstructors()[0].Invoke(values)!;
+        }
+
+        public static List<T> ConstructList<T>(NpgsqlDataReader result) {
+            List<T> objects = new();
+
+            try {
+                for (;;) {
+                    objects.Add(Construct<T>(result, false));
+                }
+            } catch (NoResultException) {
+                // no more objects to construct
+            }
+
+            result.Close();
+            return objects;
+        }
+
+        /// <summary>
+        ///    Constructs an entity from a <see cref="NpgsqlDataReader" />.
+        /// </summary>
+        /// <param name="result">The result of the <see cref="NpgsqlCommand" /></param>
+        /// <param name="close">Determines whether the result will be closed</param>
+        /// <returns>The entity</returns>
+        protected static E ConstructEntity(NpgsqlDataReader result, bool close = true) {
+            return Construct<E>(result, close);
+            // if (!result.Read()) {
+            //     result.Close();
+            //     throw new NoResultException($"{typeof(E).Name} not found");
+            // }
+
+            // object?[] values = new object[result.FieldCount];
+            // for (int i = 0; i < result.FieldCount; i++) {
+            //     object value = result.GetValue(i);
+            //     values[i] = value.GetType() == typeof(DBNull) ? null : value;
+            // }
+
+            // if (close) {
+            //     result.Close();
+            // }
+
+            // return (typeof(E).GetConstructors()[0].Invoke(values) as E)!;
         }
 
         /// <summary>
@@ -105,18 +139,19 @@ namespace MonsterTradingCardGame.Data {
         /// <returns>The list of entities</returns>
         /// <seealso cref="ConstructEntity(NpgsqlDataReader, bool)" />
         protected static List<E> ConstructEntityList(NpgsqlDataReader result) {
-            List<E> entities = new();
+            return ConstructList<E>(result);
+            // List<E> entities = new();
 
-            try {
-               for (;;) {
-                    entities.Add(ConstructEntity(result, false));
-                }
-            } catch (NoResultException) {
-                // no more entities to construct
-            }
+            // try {
+            //    for (;;) {
+            //         entities.Add(ConstructEntity(result, false));
+            //     }
+            // } catch (NoResultException) {
+            //     // no more entities to construct
+            // }
 
-            result.Close();
-            return entities;
+            // result.Close();
+            // return entities;
         }
 
         // Save

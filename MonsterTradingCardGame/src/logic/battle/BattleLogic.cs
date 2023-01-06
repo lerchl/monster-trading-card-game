@@ -22,7 +22,7 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public List<BattleLog> Battle(Token token) {
+        public string Battle(Token token) {
             Deck deck = _deckLogic.FindByPlayer(token.UserId);
 
             Battle battle;
@@ -35,7 +35,7 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
 
             // TODO: execute battle / wait
 
-            return new List<BattleLog>();
+            return "battle!";
         }
     }
 }

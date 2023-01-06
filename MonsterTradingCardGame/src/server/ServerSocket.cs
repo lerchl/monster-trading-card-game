@@ -18,8 +18,10 @@ namespace MonsterTradingCardGame.Server {
         private readonly ApiEndpointRegister _endpointRegister = new(typeof(Authentication),
                                                                      typeof(Battles),
                                                                      typeof(Cards),
-                                                                     typeof(Packages),
                                                                      typeof(Decks),
+                                                                     typeof(Packages),
+                                                                     typeof(Scoreboard),
+                                                                     typeof(Stats),
                                                                      typeof(Trades),
                                                                      typeof(Users));
         private readonly Socket _serverSocket;
