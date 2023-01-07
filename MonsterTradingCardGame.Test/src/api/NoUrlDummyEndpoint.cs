@@ -1,7 +1,7 @@
 using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Server;
 
-namespace MonsterTradingCardGame.Test {
+namespace MonsterTradingCardGame.Test.Api {
 
     internal class NoUrlDummyApiEndpoint {
 

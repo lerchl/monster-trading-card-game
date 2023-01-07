@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Logic.Exceptions {
 
-    internal class UnauthorizedException : Exception {
+    public class UnauthorizedException : Exception {
 
         // /////////////////////////////////////////////////////////////////////
         // Init

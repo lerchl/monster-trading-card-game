@@ -6,7 +6,7 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
     /// <summary>
     ///     View object for a <see cref="User" />'s info.
     /// </summary>
-    internal class UserInfoVO {
+    public class UserInfoVO {
 
         public string? Name { get; }
         public string? Bio { get; }

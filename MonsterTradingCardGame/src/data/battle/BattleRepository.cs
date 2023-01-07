@@ -9,7 +9,7 @@ namespace MonsterTradingCardGame.Data.BattleNS {
 
         public Battle FindOpenBattle() {
             string query = @"SELECT * FROM battle WHERE status = 0 ORDER BY creation LIMIT 1;";
-            var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
+            var result = new NpgsqlCommand(query, EntityManager.Instance.connection).ExecuteReader();
             return ConstructEntity(result);
         }
     }

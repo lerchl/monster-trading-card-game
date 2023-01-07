@@ -3,7 +3,7 @@ namespace MonsterTradingCardGame.Data.Trade {
     /// <summary>
     ///     Repository for trades.
     /// </summary>
-    internal class TradeRepository : Repository<Trade> {
+    public class TradeRepository : Repository<Trade> {
         // noop
     }
 }

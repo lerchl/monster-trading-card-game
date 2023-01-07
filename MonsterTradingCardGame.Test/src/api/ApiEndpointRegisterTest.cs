@@ -7,7 +7,7 @@ using MonsterTradingCardGame.Server;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace MonsterTradingCardGame.Test {
+namespace MonsterTradingCardGame.Test.Api {
 
     internal class ApiEndpointRegisterTest {
 
@@ -35,7 +35,7 @@ namespace MonsterTradingCardGame.Test {
         }
 
         [Test]
-        public void TestExecuteNoUrl() {
+        public void TestRegisteringEndpointNoUrl() {
             // Arrange
             string message = ApiEndpointRegister.URL_EXCEPTION_MESSAGE
                     .Replace("{methodName}", "NoUrlTestEndpoint")
@@ -47,7 +47,7 @@ namespace MonsterTradingCardGame.Test {
         }
 
         [Test]
-        public void TestExecuteNoResponse() {
+        public void TestRegisteringEndpointNoResponse() {
             // Arrange
             string message = ApiEndpointRegister.RETURN_TYPE_EXCEPTION_MESSAGE
                     .Replace("{methodName}", "NoResponseTestEndpoint")

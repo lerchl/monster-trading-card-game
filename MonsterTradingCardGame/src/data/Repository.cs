@@ -4,9 +4,7 @@ using Npgsql;
 
 namespace MonsterTradingCardGame.Data {
 
-    internal abstract class Repository<E> where E : Entity {
-
-        protected readonly EntityManager _entityManager = EntityManager.Instance;
+    public abstract class Repository<E> where E : Entity {
 
         private readonly string _tableName = typeof(E).GetCustomAttribute<Table>()?.Name ?? typeof(E).Name;
 
@@ -19,7 +17,7 @@ namespace MonsterTradingCardGame.Data {
         /// </summary>
         /// <param name="entity">The entity</param>
         /// <returns>The saved entity</returns>
-        public E Save(E entity) {
+        public virtual E Save(E entity) {
             PropertyInfo[] properties = typeof(E).GetProperties().Where(p => p.GetCustomAttribute<NotSetable>() == null).ToArray();
 
             if (entity.IsPersisted()) {
@@ -34,9 +32,9 @@ namespace MonsterTradingCardGame.Data {
         /// </summary>
         /// <param name="id">Id of the entity</param>
         /// <returns>The entity</returns>
-        public E FindById(Guid id) {
+        public virtual E FindById(Guid id) {
             string query = $"SELECT * FROM {_tableName} WHERE Id = :Id";
-            var command = new NpgsqlCommand(query, _entityManager.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
                     new(":Id", id)
                 }
@@ -51,7 +49,7 @@ namespace MonsterTradingCardGame.Data {
         /// <returns>List of entities</returns>
         public List<E> FindAll() {
             string query = $"SELECT * FROM {_tableName};";
-            var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
+            var result = new NpgsqlCommand(query, EntityManager.Instance.connection).ExecuteReader();
             return ConstructEntityList(result);
         }
 
@@ -61,7 +59,7 @@ namespace MonsterTradingCardGame.Data {
         /// <param name="id">Id of the entity</param>
         public void Delete(Guid id) {
             string query = $"DELETE FROM {_tableName} WHERE Id = :Id";
-            var command = new NpgsqlCommand(query, _entityManager.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
                     new(":Id", id)
                 }
@@ -136,7 +134,7 @@ namespace MonsterTradingCardGame.Data {
                            $"({string.Join(", ", PropertiesAsStrings(properties))}) " +
                            $"VALUES ({string.Join(", ", placeholders)}) RETURNING ID";
 
-            var command = new NpgsqlCommand(query, _entityManager.connection);
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection);
             command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
 
             Guid id = (Guid) command.ExecuteScalar()!;
@@ -150,7 +148,7 @@ namespace MonsterTradingCardGame.Data {
                            $"SET {string.Join(", ", placeholders)} " +
                             "WHERE Id = :Id;";
 
-            var command = new NpgsqlCommand(query, _entityManager.connection);
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection);
             command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
             command.Parameters.Add(new NpgsqlParameter(":Id", entity.Id));
             command.ExecuteNonQuery();

@@ -2,10 +2,10 @@ using MonsterTradingCardGame.Data.Cards;
 
 namespace MonsterTradingCardGame.Data.Trade {
 
-    internal class Trade : Entity {
+    public class Trade : Entity {
 
         [Column(Name = "PLAYER_ID")]
-        public Guid PlayerId { get; set; }
+        public Guid UserId { get; set; }
 
         [Column(Name = "CARD_ID")]
         public Guid CardId { get; private set; }
@@ -20,8 +20,8 @@ namespace MonsterTradingCardGame.Data.Trade {
         // Constructor
         // /////////////////////////////////////////////////////////////////////
 
-        public Trade(Guid id, Guid playerId, Guid cardId, CardType cardType, decimal minimumDamage) : base(id) {
-            PlayerId = playerId;
+        public Trade(Guid id, Guid userId, Guid cardId, CardType cardType, decimal minimumDamage) : base(id) {
+            UserId = userId;
             CardId = cardId;
             CardType = cardType;
             MinimumDamage = (double) minimumDamage;

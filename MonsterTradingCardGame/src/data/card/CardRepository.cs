@@ -2,11 +2,11 @@ using Npgsql;
 
 namespace MonsterTradingCardGame.Data.Cards {
 
-    internal class CardRepository : Repository<Card> {
+    public class CardRepository : Repository<Card> {
 
         public List<Card> FindAllByPlayer(Guid player) {
             string query = "SELECT * FROM CARD WHERE PLAYER_ID = :playerId";
-            var command = new NpgsqlCommand(query, _entityManager.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
                     new(":playerId", player)
                 }
@@ -24,7 +24,7 @@ namespace MonsterTradingCardGame.Data.Cards {
 
         public List<Card> FindAllByPackage(Guid package) {
             string query = @"SELECT * FROM CARD WHERE PACKAGE_ID = :package";
-            var command = new NpgsqlCommand(query, _entityManager.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
                     new(":package", package)
                 }

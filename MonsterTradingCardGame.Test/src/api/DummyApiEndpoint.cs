@@ -3,7 +3,7 @@ using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Data.User;
 using MonsterTradingCardGame.Server;
 
-namespace MonsterTradingCardGame.Test {
+namespace MonsterTradingCardGame.Test.Api {
 
     internal class DummyApiEndpoint {
 

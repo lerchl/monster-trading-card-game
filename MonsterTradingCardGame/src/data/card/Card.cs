@@ -1,6 +1,6 @@
 namespace MonsterTradingCardGame.Data.Cards {
 
-    internal class Card : Entity {
+    public class Card : Entity {
 
         public string Name { get; set; }
 

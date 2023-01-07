@@ -1,6 +1,6 @@
 using MonsterTradingCardGame.Api;
 
-namespace MonsterTradingCardGame.Test {
+namespace MonsterTradingCardGame.Test.Api {
 
     internal class NoResponseDummyApiEndpoint {
 

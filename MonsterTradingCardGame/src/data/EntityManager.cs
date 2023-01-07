@@ -2,7 +2,7 @@ using Npgsql;
 
 namespace MonsterTradingCardGame.Data {
 
-    internal class EntityManager {
+    public class EntityManager {
 
         private static readonly Logger<EntityManager> _logger = new();
 

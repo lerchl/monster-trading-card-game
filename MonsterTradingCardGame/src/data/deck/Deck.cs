@@ -2,7 +2,7 @@ using MonsterTradingCardGame.Data.Cards;
 
 namespace MonsterTradingCardGame.Data.Deck {
 
-    internal class Deck : Entity {
+    public class Deck : Entity {
 
         [Column(Name = "PLAYER_ID")]
         public Guid PlayerId { get; set; }

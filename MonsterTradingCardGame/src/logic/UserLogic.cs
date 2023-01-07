@@ -6,13 +6,20 @@ using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame.Logic {
 
-    internal class UserLogic : Logic<UserRepository, User> {
+    public class UserLogic : Logic<UserRepository, User> {
 
         // /////////////////////////////////////////////////////////////////////
         // Init
         // /////////////////////////////////////////////////////////////////////
 
         public UserLogic() : base(new UserRepository()) {
+            // noop
+        }
+
+        /// <summary>
+        ///     Constructor for testing purposes.
+        /// </summary>
+        public UserLogic(UserRepository repository) : base(repository) {
             // noop
         }
 

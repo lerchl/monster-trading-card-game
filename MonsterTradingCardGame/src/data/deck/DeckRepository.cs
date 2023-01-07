@@ -2,7 +2,7 @@ using Npgsql;
 
 namespace MonsterTradingCardGame.Data.Deck {
 
-    internal class DeckRepository : Repository<Deck> {
+    public class DeckRepository : Repository<Deck> {
 
         // /////////////////////////////////////////////////////////////////////
         // Methods
@@ -10,7 +10,7 @@ namespace MonsterTradingCardGame.Data.Deck {
 
         public Deck FindByPlayer(Guid playerId) {
             string query = "SELECT * FROM DECK WHERE PLAYER_ID = :playerId";
-            var command = new NpgsqlCommand(query, _entityManager.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
                     new(":playerId", playerId)
                 }
@@ -29,7 +29,7 @@ namespace MonsterTradingCardGame.Data.Deck {
         /// </returns>
         public bool IsCardInDeck(Guid playerId, Guid cardId) {
             string query = "SELECT * FROM DECK WHERE PLAYER_ID = :playerId AND (CARD_1_ID = :cardId OR CARD_2_ID = :cardId OR CARD_3_ID = :cardId OR CARD_4_ID = :cardId)";
-            return new NpgsqlCommand(query, _entityManager.connection) {
+            return new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
                     new(":playerId", playerId),
                     new(":cardId", cardId)
