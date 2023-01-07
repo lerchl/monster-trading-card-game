@@ -2,6 +2,7 @@ namespace MonsterTradingCardGame.Data {
 
     public abstract class Entity {
 
+        [Id]
         public Guid Id { get; }
 
         // /////////////////////////////////////////////////////////////////////

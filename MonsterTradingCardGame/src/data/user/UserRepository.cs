@@ -23,15 +23,14 @@ namespace MonsterTradingCardGame.Data.User {
                 SELECT name, elo, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE (status = 2 AND user_1_id = p.id)
-                       OR (status = 3 AND user_2_id = p.id)
+                    WHERE winner_id = p.id
                 ) as wins, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE (status = 3 AND user_1_id = p.id)
-                       OR (status = 2 AND user_2_id = p.id)
+                    WHERE winner_id != p.id AND winner_id IS NOT NULL
                 ) as losses
-                FROM player p;
+                FROM player p
+                ORDER BY elo DESC;
             ";
             var result = new NpgsqlCommand(query, _entityManager.connection).ExecuteReader();
 
@@ -43,13 +42,11 @@ namespace MonsterTradingCardGame.Data.User {
                 SELECT name, elo, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE (status = 2 AND user_1_id = :id)
-                       OR (status = 3 AND user_2_id = :id)
+                    WHERE winner_id = :id
                 ) as wins, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE (status = 3 AND user_1_id = :id)
-                       OR (status = 2 AND user_2_id = :id)
+                    WHERE winner_id != :id AND winner_id IS NOT NULL
                 ) as losses
                 FROM player
                 WHERE id = :id;

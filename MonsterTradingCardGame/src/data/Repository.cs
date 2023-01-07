@@ -1,4 +1,5 @@
 using System.Reflection;
+using MonsterTradingCardGame.Data.Mapping;
 using Npgsql;
 
 namespace MonsterTradingCardGame.Data {
@@ -19,7 +20,7 @@ namespace MonsterTradingCardGame.Data {
         /// <param name="entity">The entity</param>
         /// <returns>The saved entity</returns>
         public E Save(E entity) {
-            PropertyInfo[] properties = typeof(E).GetProperties().Where(p => p.Name != "Id").ToArray();
+            PropertyInfo[] properties = typeof(E).GetProperties().Where(p => p.GetCustomAttribute<NotSetable>() == null).ToArray();
 
             if (entity.IsPersisted()) {
                 return Update(entity, properties);
@@ -71,7 +72,6 @@ namespace MonsterTradingCardGame.Data {
         // Helper
         // /////////////////////////////////////////////////////////////////////
 
-        // TODO: static construct entity method
         public static T Construct<T>(NpgsqlDataReader result, bool close = true) {
             if (!result.Read()) {
                 result.Close();
@@ -114,22 +114,6 @@ namespace MonsterTradingCardGame.Data {
         /// <returns>The entity</returns>
         protected static E ConstructEntity(NpgsqlDataReader result, bool close = true) {
             return Construct<E>(result, close);
-            // if (!result.Read()) {
-            //     result.Close();
-            //     throw new NoResultException($"{typeof(E).Name} not found");
-            // }
-
-            // object?[] values = new object[result.FieldCount];
-            // for (int i = 0; i < result.FieldCount; i++) {
-            //     object value = result.GetValue(i);
-            //     values[i] = value.GetType() == typeof(DBNull) ? null : value;
-            // }
-
-            // if (close) {
-            //     result.Close();
-            // }
-
-            // return (typeof(E).GetConstructors()[0].Invoke(values) as E)!;
         }
 
         /// <summary>
@@ -140,18 +124,6 @@ namespace MonsterTradingCardGame.Data {
         /// <seealso cref="ConstructEntity(NpgsqlDataReader, bool)" />
         protected static List<E> ConstructEntityList(NpgsqlDataReader result) {
             return ConstructList<E>(result);
-            // List<E> entities = new();
-
-            // try {
-            //    for (;;) {
-            //         entities.Add(ConstructEntity(result, false));
-            //     }
-            // } catch (NoResultException) {
-            //     // no more entities to construct
-            // }
-
-            // result.Close();
-            // return entities;
         }
 
         // Save

@@ -22,7 +22,7 @@ namespace MonsterTradingCardGame.Logic {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public Deck FindByPlayer(Guid playerId) {
+        public Deck FindByUser(Guid playerId) {
             return Repository.FindByPlayer(playerId);
         }
 

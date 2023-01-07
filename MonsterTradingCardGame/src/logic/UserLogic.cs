@@ -73,8 +73,19 @@ namespace MonsterTradingCardGame.Logic {
             return Repository.FindStatsById(token.UserId);
         }
 
-        public List<UserStatsVO> GetStats() {
+        public List<UserStatsVO> GetScoreboard() {
             return Repository.FindStats();
+        }
+
+        public void UpdateElo(Guid user1Id, Guid user2Id, Guid winnerId) {
+            User user1 = FindById(user1Id);
+            User user2 = FindById(user2Id);
+
+            user1.Elo += winnerId == user1Id ? 3 : -5;
+            user2.Elo += winnerId == user2Id ? 3 : -5;
+
+            Save(user1);
+            Save(user2);
         }
     }
 }

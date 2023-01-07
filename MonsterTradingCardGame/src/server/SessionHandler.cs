@@ -33,14 +33,14 @@ namespace MonsterTradingCardGame.Server {
         ///     The key is the bearer token
         ///     The value is the token object
         /// </summary>
-        public Dictionary<string, Token> Sessions { get; private set; }
+        private readonly Dictionary<string, Token> sessions;
 
         // /////////////////////////////////////////////////////////////////////
         // Init
         // /////////////////////////////////////////////////////////////////////
 
         private SessionHandler() {
-            Sessions = new Dictionary<string, Token>();
+            sessions = new Dictionary<string, Token>();
         }
 
         // /////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ namespace MonsterTradingCardGame.Server {
         /// <returns>The token linked to the session</returns>
         public Token CreateSession(Guid userId, string username, UserRole userRole) {
             Token token = new(userId, username, userRole);
-            Sessions.Add(token.Bearer, token);
+            sessions.Add(token.Bearer, token);
             _logger.Info($"Created session for user {username}");
             return token;
         }
@@ -69,13 +69,13 @@ namespace MonsterTradingCardGame.Server {
         public Token? GetSession(string bearer) {
             bearer = bearer.Replace("Bearer ", "");
 
-            if (Sessions.ContainsKey(bearer)) {
-                Token token = Sessions[bearer];
+            if (sessions.ContainsKey(bearer)) {
+                Token token = sessions[bearer];
                 if (token.ExpiryDate > DateTime.Now) {
                     return token;
                 }
 
-                Sessions.Remove(bearer);
+                sessions.Remove(bearer);
                 _logger.Info($"Session for user {token.Username} has expired");
             }
 

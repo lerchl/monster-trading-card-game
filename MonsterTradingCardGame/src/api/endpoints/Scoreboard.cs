@@ -15,7 +15,7 @@ namespace MonsterTradingCardGame.Api.Endpoints {
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
         public static Response Get() {
-            return new(HttpCode.OK_200, _logic.GetStats());
+            return new(HttpCode.OK_200, _logic.GetScoreboard());
         }
     }
 }
