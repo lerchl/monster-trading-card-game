@@ -25,7 +25,7 @@ namespace MonsterTradingCardGame.Data {
         // /////////////////////////////////////////////////////////////////////
 
         public bool IsPersisted() {
-            return Id != null && Id != Guid.Empty;
+            return Id != Guid.Empty;
         }
     }
 }
