@@ -50,5 +50,11 @@ namespace MonsterTradingCardGame.Test.Logic {
             var e = Assert.Throws<ForbiddenException>(() => tradeLogic.Create(_token, trade))!;
             Assert.AreEqual("You can only create trade offers for your own cards", e.Message);
         }
+
+        [Test]
+        public void TestTrade() {
+            // Arrange
+            Trade trade 
+        }
     }
 }
