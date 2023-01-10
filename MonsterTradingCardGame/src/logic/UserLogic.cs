@@ -68,7 +68,7 @@ namespace MonsterTradingCardGame.Logic {
                 throw new ForbiddenException("You can only edit your own data");
             }
 
-            User user = FindById(token.UserId);
+            User user = Repository.FindByUsername(username);
             user.Name = userInfoVO.Name;
             user.Bio = userInfoVO.Bio;
             user.Image = userInfoVO.Image;

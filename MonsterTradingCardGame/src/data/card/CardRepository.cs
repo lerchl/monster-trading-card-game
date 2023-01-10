@@ -16,7 +16,7 @@ namespace MonsterTradingCardGame.Data.Cards {
 
         public Card[] PullCards(Guid package, Guid player) {
             return FindAllByPackage(package).Select(card => {
-                card.PlayerId = player;
+                card.UserId = player;
                 card.PackageId = null;
                 return Save(card);
             }).ToArray();

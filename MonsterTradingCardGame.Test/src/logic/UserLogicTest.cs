@@ -131,7 +131,7 @@ namespace MonsterTradingCardGame.Test.Logic {
         public void TestSetInfo() {
             // Arrange
             Mock<UserRepository> userRepositoryMock = new() { CallBase = true };
-            userRepositoryMock.Setup(r => r.FindById(_user.Id)).Returns(_user);
+            userRepositoryMock.Setup(r => r.FindByUsername(_user.Username)).Returns(_user);
             userRepositoryMock.Setup(r => r.Save(_user)).Returns(_user);
             UserLogic userLogic = new(userRepositoryMock.Object);
 
@@ -158,7 +158,7 @@ namespace MonsterTradingCardGame.Test.Logic {
         public void TestSetInfoOtherUserAsAdmin() {
             // Arrange
             Mock<UserRepository> userRepositoryMock = new() { CallBase = true };
-            userRepositoryMock.Setup(r => r.FindById(_user.Id)).Returns(_user);
+            userRepositoryMock.Setup(r => r.FindByUsername(_user.Username)).Returns(_user);
             userRepositoryMock.Setup(r => r.Save(_user)).Returns(_user);
             UserLogic userLogic = new(userRepositoryMock.Object);
 

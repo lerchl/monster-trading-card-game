@@ -30,7 +30,7 @@ namespace MonsterTradingCardGame.Logic {
             Guid packageId = Guid.NewGuid();
             return cards.Select(card => {
                 card.PackageId = packageId;
-                card.PlayerId = null;
+                card.UserId = null;
                 return CardLogic.Save(card);
             }).ToArray();
         }

@@ -44,7 +44,7 @@ namespace MonsterTradingCardGame.Logic {
         public Trade Create(Token token, Trade trade) {
             Card card = _cardRepository.FindById(trade.CardId);
 
-            if (token.UserId != card.PlayerId) {
+            if (token.UserId != card.UserId) {
                 throw new ForbiddenException("You can only create trade offers for your own cards");
             }
 
@@ -66,24 +66,21 @@ namespace MonsterTradingCardGame.Logic {
 
             if (token.UserId == trade.UserId) {
                 throw new ForbiddenException("You can't trade with yourself");
-            } else if (token.UserId != card.PlayerId) {
+            } else if (token.UserId != card.UserId) {
                 throw new ForbiddenException("You can only trade your own cards");
             } else if (_deckRepository.IsCardInDeck(token.UserId, cardId)) {
                 throw new ForbiddenException("You can't trade cards that are in your deck");
             } else if (trade.CardType != card.CardType) {
-                throw new ForbiddenException("The trade expects a card of type" + trade.CardType);
+                throw new ForbiddenException("The trade expects a card of type " + trade.CardType);
             } else if (trade.MinimumDamage > card.Damage) {
                 throw new ForbiddenException("The trade expects a card with a minimum damage of " + trade.MinimumDamage);
             }
 
             Card tradeCard = _cardRepository.FindById(trade.CardId);
-            (card.PlayerId, tradeCard.PlayerId) = (tradeCard.PlayerId, card.PlayerId);
+            (card.UserId, tradeCard.UserId) = (tradeCard.UserId, card.UserId);
             _cardRepository.Save(card);
             _cardRepository.Save(tradeCard);
-
-            // TODO: delete this trade
-            Delete(tradeId);
-            // TODO: delete other trades with the same card
+            Repository.DeleteByCardId(trade.CardId);
         }
 
         /// <summary>

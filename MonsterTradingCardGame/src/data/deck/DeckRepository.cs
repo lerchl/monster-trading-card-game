@@ -8,7 +8,7 @@ namespace MonsterTradingCardGame.Data.Deck {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        public Deck FindByPlayer(Guid playerId) {
+        public virtual Deck FindByPlayer(Guid playerId) {
             string query = "SELECT * FROM DECK WHERE PLAYER_ID = :playerId";
             var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {
@@ -27,7 +27,7 @@ namespace MonsterTradingCardGame.Data.Deck {
         ///     <see langword="true"/> if the card is in the player's deck,
         ///     <see langword="false"/> otherwise
         /// </returns>
-        public bool IsCardInDeck(Guid playerId, Guid cardId) {
+        public virtual bool IsCardInDeck(Guid playerId, Guid cardId) {
             string query = "SELECT * FROM DECK WHERE PLAYER_ID = :playerId AND (CARD_1_ID = :cardId OR CARD_2_ID = :cardId OR CARD_3_ID = :cardId OR CARD_4_ID = :cardId)";
             return new NpgsqlCommand(query, EntityManager.Instance.connection) {
                 Parameters = {

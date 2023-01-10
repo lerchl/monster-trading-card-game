@@ -44,7 +44,7 @@ namespace MonsterTradingCardGame.Logic {
 
             List<Card> cards = cardIds.Select(id => _cardLogic.FindById(id)).ToList();
 
-            if (cards.Any(card => card.PlayerId != token.UserId)) {
+            if (cards.Any(card => card.UserId != token.UserId)) {
                 throw new ForbiddenException("You can only add your own cards to your deck");
             }
 

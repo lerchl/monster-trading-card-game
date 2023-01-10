@@ -96,6 +96,7 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
         // /////////////////////////////////////////////////////////////////////
 
         private static bool ConsiderSpeciality(Card user1Card, Card user2Card, List<Card> user1Cards, List<Card> user2Cards) {
+            // TODO: consider speciality with cards swapped too
             // Goblins are too afraid of Dragons to attack
             if ((user1Card.Name.Contains("Dragon") && user2Card.Name.Contains("Goblin"))
                     // Wizards can control Orks so they cannot be attacked

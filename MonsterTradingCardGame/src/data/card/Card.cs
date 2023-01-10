@@ -16,19 +16,19 @@ namespace MonsterTradingCardGame.Data.Cards {
         public Guid? PackageId { get; set; }
 
         [Column(Name = "PLAYER_ID")]
-        public Guid? PlayerId { get; set; }
+        public Guid? UserId { get; set; }
 
         // /////////////////////////////////////////////////////////////////////
         // Init
         // /////////////////////////////////////////////////////////////////////
 
-        public Card(Guid id, string name, ElementType elementType, decimal damage, CardType cardType, Guid? packageId, Guid? playerId) : base(id) {
+        public Card(Guid id, string name, ElementType elementType, decimal damage, CardType cardType, Guid? packageId, Guid? userId) : base(id) {
             Name = name;
             ElementType = elementType;
             Damage = (double) damage;
             CardType = cardType;
             PackageId = packageId;
-            PlayerId = playerId;
+            UserId = userId;
         }
 
         // /////////////////////////////////////////////////////////////////////
