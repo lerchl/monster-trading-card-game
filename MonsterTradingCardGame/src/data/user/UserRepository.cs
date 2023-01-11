@@ -18,26 +18,7 @@ namespace MonsterTradingCardGame.Data.User {
             return ConstructEntity(result);
         }
 
-        public List<UserStatsVO> FindStats() {
-            string query = @"
-                SELECT name, elo, (
-                    SELECT COUNT(*)
-                    FROM battle
-                    WHERE winner_id = p.id
-                ) as wins, (
-                    SELECT COUNT(*)
-                    FROM battle
-                    WHERE winner_id != p.id AND winner_id IS NOT NULL
-                ) as losses
-                FROM player p
-                ORDER BY elo DESC;
-            ";
-            var result = new NpgsqlCommand(query, EntityManager.Instance.connection).ExecuteReader();
-
-            return ConstructList<UserStatsVO>(result);
-        }
-
-        public UserStatsVO FindStatsById(Guid id) {
+        public virtual List<UserStatsVO> FindStats() {
             string query = @"
                 SELECT name, elo, (
                     SELECT COUNT(*)
@@ -46,8 +27,39 @@ namespace MonsterTradingCardGame.Data.User {
                 ) as wins, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE winner_id != :id AND winner_id IS NOT NULL
-                ) as losses
+                    WHERE (player_1_id = :id OR player_2_id = :id)
+                            AND winner_id != :id AND winner_id IS NOT NULL
+                ) as losses, (
+                    SELECT COUNT(*)
+                    FROM battle
+                    WHERE (player_1_id = :id OR player_2_id = :id)
+                            AND winner_id IS NULL
+                ) as draws
+                FROM player p
+                ORDER BY elo DESC;
+            ";
+            var result = new NpgsqlCommand(query, EntityManager.Instance.connection).ExecuteReader();
+
+            return ConstructList<UserStatsVO>(result);
+        }
+
+        public virtual UserStatsVO FindStatsById(Guid id) {
+            string query = @"
+                SELECT name, elo, (
+                    SELECT COUNT(*)
+                    FROM battle
+                    WHERE winner_id = :id
+                ) as wins, (
+                    SELECT COUNT(*)
+                    FROM battle
+                    WHERE (player_1_id = :id OR player_2_id = :id)
+                            AND winner_id != :id AND winner_id IS NOT NULL
+                ) as losses, (
+                    SELECT COUNT(*)
+                    FROM battle
+                    WHERE (player_1_id = :id OR player_2_id = :id)
+                            AND winner_id IS NULL
+                ) as draws
                 FROM player
                 WHERE id = :id;
             ";

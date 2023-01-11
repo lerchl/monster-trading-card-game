@@ -12,21 +12,19 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         public int Elo { get; }
         public long Wins { get; }
         public long Losses { get; }
+        public long Draws { get; }
 
         // /////////////////////////////////////////////////////////////////////
         // Init
         // /////////////////////////////////////////////////////////////////////
 
         [JsonConstructor]
-        public UserStatsVO(string? name, int elo, long wins, long losses) {
+        public UserStatsVO(string? name, int elo, long wins, long losses, long draws) {
             Name = name;
             Elo = elo;
             Wins = wins;
             Losses = losses;
-        }
-
-        public UserStatsVO(User user, int wins, int losses) : this(user.Name, user.Elo, wins, losses) {
-            // noop
+            Draws = draws;
         }
     }
 }

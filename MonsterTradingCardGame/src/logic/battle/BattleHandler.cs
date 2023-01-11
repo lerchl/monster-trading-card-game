@@ -50,6 +50,7 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
                 entry.ResetEvent.Set();
             });
 
+            _queue.Remove(entry);
             return entry;
         }
 
