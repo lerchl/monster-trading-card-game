@@ -52,7 +52,8 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
                 battleLog.Add(round++, $"User 1's {user1Card.Name} ({user1Card.ElementType}) " +
                         $"vs User 2's {user2Card.Name} ({user2Card.ElementType})");
 
-                if (ConsiderSpeciality(user1Card, user2Card, user1Cards, user2Cards)) {
+                if (ConsiderSpeciality(user1Card, user2Card, user1Cards, user2Cards) ||
+                        ConsiderSpeciality(user2Card, user1Card, user2Cards, user1Cards)) {
                     continue;
                 }
 
@@ -96,8 +97,6 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
         // /////////////////////////////////////////////////////////////////////
 
         private static bool ConsiderSpeciality(Card user1Card, Card user2Card, List<Card> user1Cards, List<Card> user2Cards) {
-            // TODO: consider speciality with cards swapped too
-            // Goblins are too afraid of Dragons to attack
             if ((user1Card.Name.Contains("Dragon") && user2Card.Name.Contains("Goblin"))
                     // Wizards can control Orks so they cannot be attacked
                     || (user1Card.Name.Contains("Wizard") && user2Card.Name.Contains("Orks"))

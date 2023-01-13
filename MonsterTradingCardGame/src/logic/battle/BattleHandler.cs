@@ -45,7 +45,6 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
             battle.User2Id = userId;
 
             Task.Run(() => {
-                // TODO: remove battle from queue
                 _battleLogic.ExecuteBattle(battle);
                 entry.ResetEvent.Set();
             });
