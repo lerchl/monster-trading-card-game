@@ -139,10 +139,15 @@ namespace MonsterTradingCardGame.Api {
             if (bearerAttribute != null) {
                 return token;
             } else if (pathParamAttribute != null) {
-                // TODO: pathParamAttribute.Name could be null or not an actual group in the regex
-                return new Regex(genericDestination.endpoint).Match(httpRequest.Destination.endpoint).Groups[pathParamAttribute.Name].Value;
+                // cannot be null as parameterInfo.Name can only be null
+                // if it is the ParameterInfo of a return value
+                string name = pathParamAttribute.Name ?? parameterInfo.Name!;
+                Regex regex = new(genericDestination.endpoint);
+                Match match = regex.Match(httpRequest.Destination.endpoint);
+
+                return match.Groups[name].Value;
             } else if (queryParamAttribute != null) {
-                // cannot be null  as parameterInfo.Name can only be null
+                // cannot be null as parameterInfo.Name can only be null
                 // if it is the ParameterInfo of a return value
                 string name = queryParamAttribute.Name ?? parameterInfo.Name!;
                 string pattern = name + "=(?'" + name + "'" + RegexUtils.QUERY_PARAM + ")";
@@ -151,6 +156,11 @@ namespace MonsterTradingCardGame.Api {
 
                 return match.Groups[name].Value;
             } else if (bodyAttribute != null) {
+                if (httpRequest.Data == null) {
+                    // TODO: throw exception that no body has been sent
+                    throw new NotImplementedException("TODO!");
+                }
+
                 return new JsonSerializer().Deserialize(httpRequest.Data, parameterInfo.ParameterType);
             }
 

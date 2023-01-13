@@ -23,16 +23,16 @@ namespace MonsterTradingCardGame.Data.User {
                 SELECT name, elo, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE winner_id = :id
+                    WHERE winner_id = p.id
                 ) as wins, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE (player_1_id = :id OR player_2_id = :id)
-                            AND winner_id != :id AND winner_id IS NOT NULL
+                    WHERE (player_1_id = p.id OR player_2_id = p.id)
+                            AND winner_id != p.id AND winner_id IS NOT NULL
                 ) as losses, (
                     SELECT COUNT(*)
                     FROM battle
-                    WHERE (player_1_id = :id OR player_2_id = :id)
+                    WHERE (player_1_id = p.id OR player_2_id = p.id)
                             AND winner_id IS NULL
                 ) as draws
                 FROM player p

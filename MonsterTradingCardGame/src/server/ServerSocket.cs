@@ -30,16 +30,16 @@ namespace MonsterTradingCardGame.Server {
         // /////////////////////////////////////////////////////////////////////
         // Constructor
         // /////////////////////////////////////////////////////////////////////
-    
+
         public ServerSocket(int port) {
             _serverSocket = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream,
                     ProtocolType.Tcp);
-            
+
             _serverSocket.Bind(new IPEndPoint(IPAddress.Loopback, port));
             _serverSocket.Listen();
             _logger.Info("Listening on port " + port);
-            
+
             for (;;) {
                 if (!wait) {
                     _logger.Info("Accepting new connection");
@@ -53,7 +53,7 @@ namespace MonsterTradingCardGame.Server {
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
-    
+
         private void AcceptCallback(IAsyncResult ar) {
             wait = false;
 

@@ -10,10 +10,10 @@ namespace MonsterTradingCardGame.Test.Api {
         private const string USERNAME_PATH_PARAM = "username";
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = $"/dummy/(?'{USERNAME_PATH_PARAM}'{RegexUtils.USERNAME})")]
-        public static Response TestEndpoint([Bearer]                                Token  token,
-                                            [PathParam(Name = USERNAME_PATH_PARAM)] string username,
-                                            [QueryParam(Name = "format")]           string format,
-                                            [Body]                                  User   user) {
+        public static Response TestEndpoint([Bearer]     Token  token,
+                                            [PathParam]  string username,
+                                            [QueryParam] string format,
+                                            [Body]       User   user) {
             string content = token.UserId + username + format + user.Username;
             return new Response(HttpCode.OK_200, content, false);
         }

@@ -28,8 +28,8 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL)]
-        public static Response GetInfo([Bearer]                                Token bearer,
-                                       [PathParam(Name = USERNAME_PATH_PARAM)] string username) {
+        public static Response GetInfo([Bearer]    Token  bearer,
+                                       [PathParam] string username) {
             try {
                 return new(HttpCode.OK_200, _logic.GetInfo(bearer, username));
             } catch (ForbiddenException e) {
@@ -40,9 +40,9 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.PUT, Url = URL)]
-        public static Response SetInfo([Bearer]                                Token  token,
-                                       [PathParam(Name = USERNAME_PATH_PARAM)] string username,
-                                       [Body]                                  UserInfoVO userInfoVO) {
+        public static Response SetInfo([Bearer]    Token      token,
+                                       [PathParam] string     username,
+                                       [Body]      UserInfoVO userInfoVO) {
             try {
                 return new(HttpCode.OK_200, _logic.SetInfo(token, username, userInfoVO));
             } catch (ForbiddenException e) {

@@ -4,7 +4,7 @@ namespace MonsterTradingCardGame.Data.User {
     public class User : Entity {
 
         public string Username { get; private set; }
-        public string Password { get; private set; }
+        public string Password { get; set; }
         public UserRole Role { get; set; }
         public int Money { get; set; }
         public string? Name { get; set; }

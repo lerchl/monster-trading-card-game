@@ -22,7 +22,7 @@ namespace MonsterTradingCardGame.Api {
             return $"{method}-Request to {endpoint}";
         }
 
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (obj == null || GetType() != obj.GetType()) {
                 return false;
             }

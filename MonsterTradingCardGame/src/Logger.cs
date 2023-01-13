@@ -1,6 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace MonsterTradingCardGame {
 
-    class Logger<T> {
+    internal class Logger<T> {
 
         // /////////////////////////////////////////////////////////////////////////
         // Methods
@@ -18,6 +20,8 @@ namespace MonsterTradingCardGame {
             Log("ERRO", message);
         }
 
+        // want to force creation of logger with type
+        [SuppressMessage("csharp", "CA1822")]
         private void Log(string level, string message) {
             Console.WriteLine($"[{level}] ({DateTime.Now:HH:mm:ss}) {message} ::: {typeof(T).Name}");
         }

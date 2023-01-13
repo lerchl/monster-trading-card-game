@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using MonsterTradingCardGame.Api.Endpoints.Users;
 using MonsterTradingCardGame.Data;
 using MonsterTradingCardGame.Data.User;
@@ -34,6 +36,7 @@ namespace MonsterTradingCardGame.Logic {
             } catch (NoResultException) {
                 user.Money = 20;
                 user.Elo = 100;
+                user.Password = HashingUtils.Sha256(user.Password);
                 Save(user);
             }
         }
@@ -48,7 +51,7 @@ namespace MonsterTradingCardGame.Logic {
                 throw new UnauthorizedException("Invalid username or password");
             }
 
-            if (!dbUser.Password.Equals(user.Password)) {
+            if (!dbUser.Password.Equals(HashingUtils.Sha256(user.Password))) {
                 throw new UnauthorizedException("Invalid username or password");
             }
 
