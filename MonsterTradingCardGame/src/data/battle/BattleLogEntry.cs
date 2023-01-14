@@ -19,5 +19,3 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
         }
     }
 }
-
-// BRB

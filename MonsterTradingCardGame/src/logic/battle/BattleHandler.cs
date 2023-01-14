@@ -32,6 +32,10 @@ namespace MonsterTradingCardGame.Logic.BattleNS {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
+        // TODO: Method should only be called by one thread at a time
+        /// <summary>
+        ///     Queues a User to battle
+        /// </summary>
         public BattleQueueEntry QueueBattle(Guid userId) {
             BattleQueueEntry? entry = FindBattleForUser(userId);
 
