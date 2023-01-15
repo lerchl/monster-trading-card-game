@@ -17,7 +17,7 @@ namespace MonsterTradingCardGame.Api {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = URL + "$")]
+        [ApiEndpoint(HttpMethod = EHttpMethod.GET, Url = "/trades")]
         public static Response GetAllTrades() {
             return new(HttpCode.OK_200, _logic.FindAll());
         }

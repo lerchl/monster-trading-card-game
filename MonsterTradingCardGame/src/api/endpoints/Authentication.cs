@@ -8,13 +8,15 @@ namespace Api.Endpoints {
 
     internal class Authentication {
 
+        private const string URL = "/sessions";
+
         private static readonly UserLogic _logic = new();
 
         // /////////////////////////////////////////////////////////////////////
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/sessions", RequiresAuthentication = false)]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = URL, RequiresAuthentication = false)]
         public static Response Login([Body] User user) {
             try {
                 return new(HttpCode.OK_200, _logic.Login(user));

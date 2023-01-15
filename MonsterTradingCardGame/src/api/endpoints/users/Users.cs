@@ -17,7 +17,7 @@ namespace MonsterTradingCardGame.Api.Endpoints.Users {
         // Methods
         // /////////////////////////////////////////////////////////////////////
 
-        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "^/users$", RequiresAuthentication = false)]
+        [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = "/users", RequiresAuthentication = false)]
         public static Response Register([Body] User user) {
             try {
                 _logic.Register(user);
