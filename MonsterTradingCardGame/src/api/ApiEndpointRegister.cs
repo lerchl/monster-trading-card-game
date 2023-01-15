@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
 using MonsterTradingCardGame.Data;
+using MonsterTradingCardGame.Logic.Exceptions;
 using MonsterTradingCardGame.Server;
 using Newtonsoft.Json;
 
@@ -67,8 +68,6 @@ namespace MonsterTradingCardGame.Api {
             if (endpointTable.ContainsKey(destination)) {
                 methodInfo = endpointTable[destination];
             } else {
-                // TODO: regular endpoints with regex count as generic endpoints but shouldnt
-
                 // exact match for endpoint could not be found
                 // might be an endpoint with path params
                 Destination? genericDestination = endpointTable.Keys.ToList().FirstOrDefault(d => GenericDestinationMatches(d, destination));
@@ -157,8 +156,7 @@ namespace MonsterTradingCardGame.Api {
                 return match.Groups[name].Value;
             } else if (bodyAttribute != null) {
                 if (httpRequest.Data == null) {
-                    // TODO: throw exception that no body has been sent
-                    throw new NotImplementedException("TODO!");
+                    throw new BadRequestException("Body is empty");
                 }
 
                 return new JsonSerializer().Deserialize(httpRequest.Data, parameterInfo.ParameterType);
