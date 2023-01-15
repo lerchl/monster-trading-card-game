@@ -7,6 +7,7 @@ using MonsterTradingCardGame.Api;
 using MonsterTradingCardGame.Api.Endpoints;
 using MonsterTradingCardGame.Api.Endpoints.Users;
 using MonsterTradingCardGame.Data;
+using MonsterTradingCardGame.Logic.Exceptions;
 using Newtonsoft.Json;
 
 namespace MonsterTradingCardGame.Server {
@@ -63,12 +64,14 @@ namespace MonsterTradingCardGame.Server {
             int length = client.Receive(buffer);
 
             string text = Encoding.ASCII.GetString(buffer, 0, length);
-            HttpRequest request = ParseRequest(text);
-            _logger.Info($"Received {request.Destination.method} request for {request.Destination.endpoint} from {endPoint}");
 
             Response response;
             try {
+                HttpRequest request = ParseRequest(text);
+                _logger.Info($"Received {request.Destination.method} request for {request.Destination.endpoint} from {endPoint}");
                 response = _endpointRegister.Execute(request);
+            } catch (BadRequestException e) {
+                response = new Response(HttpCode.BAD_REQUEST_400, e.Message);
             } catch (NoSuchDestinationException) {
                 response = new Response(HttpCode.NOT_FOUND_404);
             } catch (ProgrammerFailException e) {
@@ -98,7 +101,7 @@ namespace MonsterTradingCardGame.Server {
             string httpMethod = requestMatch.Groups[RegexUtils.HTTP_METHOD_GROUP_NAME].Value;
 
             if (!Enum.TryParse(httpMethod, out EHttpMethod eHttpMethod)) {
-                // TODO: throw method not allowed exception
+                throw new BadRequestException("Invalid HTTP method: " + httpMethod);
             }
 
             string apiEndpoint = requestMatch.Groups[RegexUtils.ENDPOINT_GROUP_NAME].Value;
