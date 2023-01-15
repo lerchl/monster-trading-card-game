@@ -6,7 +6,7 @@ namespace MonsterTradingCardGame.Data.Cards {
 
         public virtual List<Card> FindAllByPlayer(Guid player) {
             string query = "SELECT * FROM CARD WHERE PLAYER_ID = :playerId";
-            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.Connection) {
                 Parameters = {
                     new(":playerId", player)
                 }
@@ -24,7 +24,7 @@ namespace MonsterTradingCardGame.Data.Cards {
 
         public virtual List<Card> FindAllByPackage(Guid package) {
             string query = @"SELECT * FROM CARD WHERE PACKAGE_ID = :package";
-            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.Connection) {
                 Parameters = {
                     new(":package", package)
                 }

@@ -11,7 +11,7 @@ namespace MonsterTradingCardGame.Data.User {
 
         public virtual User FindByUsername(string username) {
             string query = @"SELECT * FROM player WHERE username = :username;";
-            var result = new NpgsqlCommand(query, EntityManager.Instance.connection) {
+            var result = new NpgsqlCommand(query, EntityManager.Instance.Connection) {
                 Parameters = { new NpgsqlParameter(":username", username) }
             }.ExecuteReader();
 
@@ -38,7 +38,7 @@ namespace MonsterTradingCardGame.Data.User {
                 FROM player p
                 ORDER BY elo DESC;
             ";
-            var result = new NpgsqlCommand(query, EntityManager.Instance.connection).ExecuteReader();
+            var result = new NpgsqlCommand(query, EntityManager.Instance.Connection).ExecuteReader();
 
             return ConstructList<UserStatsVO>(result);
         }
@@ -63,7 +63,7 @@ namespace MonsterTradingCardGame.Data.User {
                 FROM player
                 WHERE id = :id;
             ";
-            var result = new NpgsqlCommand(query, EntityManager.Instance.connection) {
+            var result = new NpgsqlCommand(query, EntityManager.Instance.Connection) {
                 Parameters = { new NpgsqlParameter(":id", id) }
             }.ExecuteReader();
 

@@ -34,7 +34,7 @@ namespace MonsterTradingCardGame.Data {
         /// <returns>The entity</returns>
         public virtual E FindById(Guid id) {
             string query = $"SELECT * FROM {_tableName} WHERE Id = :Id";
-            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.Connection) {
                 Parameters = {
                     new(":Id", id)
                 }
@@ -49,7 +49,7 @@ namespace MonsterTradingCardGame.Data {
         /// <returns>List of entities</returns>
         public List<E> FindAll() {
             string query = $"SELECT * FROM {_tableName};";
-            var result = new NpgsqlCommand(query, EntityManager.Instance.connection).ExecuteReader();
+            var result = new NpgsqlCommand(query, EntityManager.Instance.Connection).ExecuteReader();
             return ConstructEntityList(result);
         }
 
@@ -59,7 +59,7 @@ namespace MonsterTradingCardGame.Data {
         /// <param name="id">Id of the entity</param>
         public void Delete(Guid id) {
             string query = $"DELETE FROM {_tableName} WHERE Id = :Id";
-            var command = new NpgsqlCommand(query, EntityManager.Instance.connection) {
+            var command = new NpgsqlCommand(query, EntityManager.Instance.Connection) {
                 Parameters = {
                     new(":Id", id)
                 }
@@ -134,7 +134,7 @@ namespace MonsterTradingCardGame.Data {
                            $"({string.Join(", ", PropertiesAsStrings(properties))}) " +
                            $"VALUES ({string.Join(", ", placeholders)}) RETURNING ID";
 
-            var command = new NpgsqlCommand(query, EntityManager.Instance.connection);
+            var command = new NpgsqlCommand(query, EntityManager.Instance.Connection);
             command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
 
             Guid id = (Guid) command.ExecuteScalar()!;
@@ -148,7 +148,7 @@ namespace MonsterTradingCardGame.Data {
                            $"SET {string.Join(", ", placeholders)} " +
                             "WHERE Id = :Id;";
 
-            var command = new NpgsqlCommand(query, EntityManager.Instance.connection);
+            var command = new NpgsqlCommand(query, EntityManager.Instance.Connection);
             command.Parameters.AddRange(PropertiesAsParameters(properties, entity));
             command.Parameters.Add(new NpgsqlParameter(":Id", entity.Id));
             command.ExecuteNonQuery();

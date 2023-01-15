@@ -19,8 +19,7 @@ namespace MonsterTradingCardGame.Data {
             }
         }
 
-        // TODO: make a property
-        public readonly NpgsqlConnection connection;
+        public NpgsqlConnection Connection { get; }
 
         // /////////////////////////////////////////////////////////////////////
         // Constructor
@@ -28,8 +27,8 @@ namespace MonsterTradingCardGame.Data {
 
         private EntityManager() {
             string connectionString = "Host=localhost;Username=postgres;Password=gFA4lKnavg4iRsjfCR0m;Database=postgres";
-            connection = new(connectionString);
-            connection.Open();
+            Connection = new(connectionString);
+            Connection.Open();
             _logger.Info("Connected to database");
         }
     }
