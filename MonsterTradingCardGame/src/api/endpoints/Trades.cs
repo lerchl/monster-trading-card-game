@@ -35,11 +35,11 @@ namespace MonsterTradingCardGame.Api {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.POST, Url = $"{URL}/(?'{TRADE_ID_PATH_PARAM}'{RegexUtils.GUID})$")]
-        public static Response Trade([Bearer]    Token token,
-                                     [PathParam] Guid  tradeId,
-                                     [Body]      Guid  cardId) {
+        public static Response Trade([Bearer]    Token       token,
+                                     [PathParam] string      tradeId,
+                                     [Body]      GuidWrapper cardId) {
             try {
-                _logic.Trade(token, tradeId, cardId);
+                _logic.Trade(token, Guid.Parse(tradeId), Guid.Parse(cardId.Id));
                 return new(HttpCode.OK_200);
             } catch (NoResultException e) {
                 return new(HttpCode.NOT_FOUND_404, e.Message);
@@ -49,10 +49,10 @@ namespace MonsterTradingCardGame.Api {
         }
 
         [ApiEndpoint(HttpMethod = EHttpMethod.DELETE, Url = $"{URL}/(?'{TRADE_ID_PATH_PARAM}'{RegexUtils.GUID})$")]
-        public static Response DeleteTrade([Bearer]    Token token,
-                                           [PathParam] Guid  tradeId) {
+        public static Response DeleteTrade([Bearer]    Token   token,
+                                           [PathParam] string  tradeId) {
             try {
-                _logic.Delete(token, tradeId);
+                _logic.Delete(token, Guid.Parse(tradeId));
                 return new(HttpCode.NO_CONTENT_204);
             } catch (NoResultException e) {
                 return new(HttpCode.NOT_FOUND_404, e.Message);
