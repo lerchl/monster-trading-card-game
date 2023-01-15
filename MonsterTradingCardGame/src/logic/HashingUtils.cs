@@ -6,7 +6,7 @@ namespace MonsterTradingCardGame.Logic {
     /// <summary>
     ///     Utility class for hashing
     /// </summary>
-    internal class HashingUtils {
+    public class HashingUtils {
 
         private static readonly SHA256 _sha256 = SHA256.Create();
 

@@ -52,8 +52,9 @@ namespace MonsterTradingCardGame.Test.Logic {
         [Test]
         public void TestLogin() {
             // Arrange
+            User _dbUser = new(_user.Id, _user.Username, HashingUtils.Sha256(_user.Password), _user.Role, _user.Money, _user.Name!, _user.Bio!, _user.Image!, _user.Elo);
             Mock<UserRepository> userRepositoryMock = new() { CallBase = true };
-            userRepositoryMock.Setup(r => r.FindByUsername(_user.Username)).Returns(_user);
+            userRepositoryMock.Setup(r => r.FindByUsername(_user.Username)).Returns(_dbUser);
             UserLogic userLogic = new(userRepositoryMock.Object);
 
             // Act / Assert
